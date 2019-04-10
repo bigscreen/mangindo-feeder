@@ -1,0 +1,11 @@
+APP_NAME: "mangindo-feeder"
+
+APP_PORT: "8080"
+LOG_LEVEL: "debug"
+ENVIRONMENT: "test"
+
+REDIS_HOST: "localhost"
+REDIS_PORT: "6379"
+REDIS_POOL: "10"
+
+WORKER_REDIS_ADDRESS: "127.0.0.1:6379"
