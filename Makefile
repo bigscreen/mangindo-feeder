@@ -41,5 +41,7 @@ lint:
 test:
 	ENVIRONMENT=test go test $(UNIT_TEST_PACKAGES) -p=1
 
+test-ci: copy-config build-deps compile fmt
+
 copy-config:
 	cp application.yml.sample application.yml
