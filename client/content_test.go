@@ -2,6 +2,7 @@ package client
 
 import (
 	"context"
+	"github.com/ad2games/vcr-go"
 	"github.com/bigscreen/mangindo-feeder/appcontext"
 	"github.com/bigscreen/mangindo-feeder/config"
 	"github.com/bigscreen/mangindo-feeder/constants"
@@ -74,4 +75,15 @@ func (s *ContentClientTestSuite) TestGetContentList_ReturnsError_WhenOriginServe
 	assert.NotNil(s.T(), err)
 	assert.Equal(s.T(), constants.InvalidJSONResponseError, err.Error())
 	assert.Nil(s.T(), res)
+}
+
+func (s *ContentClientTestSuite) TestGetContentList_ReturnsSuccessfulResponse() {
+	vcr.Start("get_content_list_valid_response", nil)
+	defer vcr.Stop()
+
+	cc := NewContentClient()
+	res, err := cc.GetContentList(s.ctx, "bleach", 657.0)
+
+	assert.Nil(s.T(), err)
+	assert.True(s.T(), len(res.Contents) > 0)
 }

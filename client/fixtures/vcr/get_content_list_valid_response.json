@@ -1,0 +1,49 @@
+{
+  "Episodes": [
+    {
+      "Request": {
+        "Method": "GET",
+        "URL": "http://mangacanblog.com/official/2016/image_list.php?manga=bleach\u0026chapter=657.000000",
+        "Body": null
+      },
+      "Response": {
+        "Status": "200 OK",
+        "StatusCode": 200,
+        "ContentLength": -1,
+        "Header": {
+          "Access-Control-Allow-Origin": [
+            "*"
+          ],
+          "Cache-Control": [
+            "no-cache, no-store, must-revalidate",
+            "max-age=0, no-cache, no-store, must-revalidate"
+          ],
+          "Content-Type": [
+            "application/json"
+          ],
+          "Date": [
+            "Fri, 12 Apr 2019 11:39:21 GMT"
+          ],
+          "Expires": [
+            "0",
+            "Wed, 11 Jan 1984 05:00:00 GMT"
+          ],
+          "Pragma": [
+            "no-cache;",
+            "no-cache"
+          ],
+          "Server": [
+            "Apache"
+          ],
+          "Vary": [
+            "Accept-Encoding,User-Agent"
+          ],
+          "X-Powered-By": [
+            "PHP/5.6.15"
+          ]
+        },
+        "Body": "eyJjaGFwdGVyIjpbeyJpZCI6MSwidXJsIjoiaHR0cDpcL1wvbWFuZ2FjYW5ibG9nLmNvbVwvbWFuZ2FzXC9ibGVhY2hcLzY1NyAtIHRodW5kZXIgZ29kIDJcL21hbmdhY2FuYmxvZ2NvbV9ibGVhY2hfNjU3XzAxLmpwZyIsInBhZ2UiOjF9LHsiaWQiOjIsInVybCI6Imh0dHA6XC9cL21hbmdhY2FuYmxvZy5jb21cL21hbmdhc1wvYmxlYWNoXC82NTcgLSB0aHVuZGVyIGdvZCAyXC9tYW5nYWNhbmJsb2djb21fYmxlYWNoXzY1N18wMi5qcGciLCJwYWdlIjoyfSx7ImlkIjozLCJ1cmwiOiJodHRwOlwvXC9tYW5nYWNhbmJsb2cuY29tXC9tYW5nYXNcL2JsZWFjaFwvNjU3IC0gdGh1bmRlciBnb2QgMlwvbWFuZ2FjYW5ibG9nY29tX2JsZWFjaF82NTdfMDMuanBnIiwicGFnZSI6M30seyJpZCI6NCwidXJsIjoiaHR0cDpcL1wvbWFuZ2FjYW5ibG9nLmNvbVwvbWFuZ2FzXC9ibGVhY2hcLzY1NyAtIHRodW5kZXIgZ29kIDJcL21hbmdhY2FuYmxvZ2NvbV9ibGVhY2hfNjU3XzA0LmpwZyIsInBhZ2UiOjR9LHsiaWQiOjUsInVybCI6Imh0dHA6XC9cL21hbmdhY2FuYmxvZy5jb21cL21hbmdhc1wvYmxlYWNoXC82NTcgLSB0aHVuZGVyIGdvZCAyXC9tYW5nYWNhbmJsb2djb21fYmxlYWNoXzY1N18wNS5qcGciLCJwYWdlIjo1fSx7ImlkIjo2LCJ1cmwiOiJodHRwOlwvXC9tYW5nYWNhbmJsb2cuY29tXC9tYW5nYXNcL2JsZWFjaFwvNjU3IC0gdGh1bmRlciBnb2QgMlwvbWFuZ2FjYW5ibG9nY29tX2JsZWFjaF82NTdfMDYuanBnIiwicGFnZSI6Nn0seyJpZCI6NywidXJsIjoiaHR0cDpcL1wvbWFuZ2FjYW5ibG9nLmNvbVwvbWFuZ2FzXC9ibGVhY2hcLzY1NyAtIHRodW5kZXIgZ29kIDJcL21hbmdhY2FuYmxvZ2NvbV9ibGVhY2hfNjU3XzA3LmpwZyIsInBhZ2UiOjd9LHsiaWQiOjgsInVybCI6Imh0dHA6XC9cL21hbmdhY2FuYmxvZy5jb21cL21hbmdhc1wvYmxlYWNoXC82NTcgLSB0aHVuZGVyIGdvZCAyXC9tYW5nYWNhbmJsb2djb21fYmxlYWNoXzY1N18wOC5qcGciLCJwYWdlIjo4fSx7ImlkIjo5LCJ1cmwiOiJodHRwOlwvXC9tYW5nYWNhbmJsb2cuY29tXC9tYW5nYXNcL2JsZWFjaFwvNjU3IC0gdGh1bmRlciBnb2QgMlwvbWFuZ2FjYW5ibG9nY29tX2JsZWFjaF82NTdfMDkuanBnIiwicGFnZSI6OX0seyJpZCI6MTAsInVybCI6Imh0dHA6XC9cL21hbmdhY2FuYmxvZy5jb21cL21hbmdhc1wvYmxlYWNoXC82NTcgLSB0aHVuZGVyIGdvZCAyXC9tYW5nYWNhbmJsb2djb21fYmxlYWNoXzY1N18xMC5qcGciLCJwYWdlIjoxMH0seyJpZCI6MTEsInVybCI6Imh0dHA6XC9cL21hbmdhY2FuYmxvZy5jb21cL21hbmdhc1wvYmxlYWNoXC82NTcgLSB0aHVuZGVyIGdvZCAyXC9tYW5nYWNhbmJsb2djb21fYmxlYWNoXzY1N18xMy5qcGciLCJwYWdlIjoxMX0seyJpZCI6MTIsInVybCI6Imh0dHA6XC9cL21hbmdhY2FuYmxvZy5jb21cL21hbmdhc1wvYmxlYWNoXC82NTcgLSB0aHVuZGVyIGdvZCAyXC9tYW5nYWNhbmJsb2djb21fYmxlYWNoXzY1N18xNC5qcGciLCJwYWdlIjoxMn0seyJpZCI6MTMsInVybCI6Imh0dHA6XC9cL21hbmdhY2FuYmxvZy5jb21cL21hbmdhc1wvYmxlYWNoXC82NTcgLSB0aHVuZGVyIGdvZCAyXC9tYW5nYWNhbmJsb2djb21fYmxlYWNoXzY1N18xNS5qcGciLCJwYWdlIjoxM30seyJpZCI6MTQsInVybCI6Imh0dHA6XC9cL21hbmdhY2FuYmxvZy5jb21cL21hbmdhc1wvYmxlYWNoXC82NTcgLSB0aHVuZGVyIGdvZCAyXC9tYW5nYWNhbmJsb2djb21fYmxlYWNoXzY1N18xNi5qcGciLCJwYWdlIjoxNH0seyJpZCI6MTUsInVybCI6Imh0dHBzOlwvXC8yLmJwLmJsb2dzcG90LmNvbVwvLS1USnpOa0tVaXZFXC9XbVhuRDJFT2dPSVwvQUFBQUFBQUFCdmtcL2hvNEVxWHcwRVpnSk0zakdJc0hzZTVyVExiY2hFTlFRQUNMY0JHQXNcL3MxNjAwXC9hbGxfYW5pbWVfd2ViLnBuZyIsInBhZ2UiOjE1fSx7ImlkIjoxNiwidXJsIjoiaHR0cDpcL1wvbWFuZ2FjYW5ibG9nLmNvbVwvbWFuZ2FzXC9ibGVhY2hcLzY1NyAtIHRodW5kZXIgZ29kIDJcL21hbmdhY2FuYmxvZ2NvbV9ibGVhY2hfNjU3XzE3LmpwZyIsInBhZ2UiOjE2fSx7ImlkIjoxNywidXJsIjoiaHR0cDpcL1wvbWFuZ2FjYW5ibG9nLmNvbVwvbWFuZ2FzXC9ibGVhY2hcLzY1NyAtIHRodW5kZXIgZ29kIDJcL21hbmdhY2FuYmxvZ2NvbV9ibGVhY2hfNjU3XzE4LmpwZyIsInBhZ2UiOjE3fSx7ImlkIjoxOCwidXJsIjoiaHR0cDpcL1wvbWFuZ2FjYW5ibG9nLmNvbVwvbWFuZ2FzXC9ibGVhY2hcLzY1NyAtIHRodW5kZXIgZ29kIDJcL21hbmdhY2FuYmxvZ2NvbV9ibGVhY2hfNjU3XzE5LmpwZyIsInBhZ2UiOjE4fV19"
+      }
+    }
+  ]
+}

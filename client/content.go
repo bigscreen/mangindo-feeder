@@ -46,7 +46,7 @@ func (c *contentClient) GetContentList(ctx context.Context, titleId string, chap
 		logger.Errorf("Error when unmarshalling origin response: %s", err.Error())
 		return nil, errors.New(constants.InvalidJSONResponseError)
 	}
-	return nil, err
+	return response, err
 }
 
 func NewContentClient() *contentClient {
