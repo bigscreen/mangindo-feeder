@@ -5,6 +5,7 @@ import (
 	"github.com/ad2games/vcr-go"
 	"github.com/bigscreen/mangindo-feeder/appcontext"
 	"github.com/bigscreen/mangindo-feeder/config"
+	"github.com/bigscreen/mangindo-feeder/constants"
 	"github.com/bigscreen/mangindo-feeder/logger"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
@@ -70,7 +71,7 @@ func (s *MangaClientTestSuite) TestGetMangaList_ReturnsError_WhenOriginServerRet
 	res, err := mc.GetMangaList(s.ctx)
 
 	assert.NotNil(s.T(), err)
-	assert.Equal(s.T(), InvalidJSONResponseError, err.Error())
+	assert.Equal(s.T(), constants.InvalidJSONResponseError, err.Error())
 	assert.Nil(s.T(), res)
 }
 
