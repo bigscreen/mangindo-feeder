@@ -1,7 +1,6 @@
 package client
 
 import (
-	"context"
 	"github.com/ad2games/vcr-go"
 	"github.com/bigscreen/mangindo-feeder/appcontext"
 	"github.com/bigscreen/mangindo-feeder/config"
@@ -19,15 +18,12 @@ import (
 
 type MangaClientTestSuite struct {
 	suite.Suite
-	ctx context.Context
 }
 
 func (s *MangaClientTestSuite) SetupSuite() {
 	config.Load()
 	appcontext.Initiate()
 	logger.SetupLogger()
-
-	s.ctx = context.Background()
 }
 
 func TestMangaClientTestSuite(t *testing.T) {
@@ -41,7 +37,7 @@ func (s *MangaClientTestSuite) TestGetMangaList_ReturnsError_WhenCallTimesOut() 
 	config.Load()
 
 	mc := NewMangaClient()
-	res, err := mc.GetMangaList(s.ctx)
+	res, err := mc.GetMangaList()
 
 	os.Setenv("HYSTRIX_TIMEOUT_MS", ht)
 	config.Load()
@@ -56,7 +52,7 @@ func (s *MangaClientTestSuite) TestGetMangaList_ReturnsError_WhenOriginServerRet
 		Reply(http.StatusInternalServerError)
 
 	mc := NewMangaClient()
-	res, err := mc.GetMangaList(s.ctx)
+	res, err := mc.GetMangaList()
 
 	assert.NotNil(s.T(), err)
 	assert.Equal(s.T(), "origin server error: Server is down: returned status code: 500", err.Error())
@@ -70,7 +66,7 @@ func (s *MangaClientTestSuite) TestGetMangaList_ReturnsError_WhenOriginServerRet
 		Body(ioutil.NopCloser(strings.NewReader("some error")))
 
 	mc := NewMangaClient()
-	res, err := mc.GetMangaList(s.ctx)
+	res, err := mc.GetMangaList()
 
 	assert.NotNil(s.T(), err)
 	assert.Equal(s.T(), constants.InvalidJSONResponseError, err.Error())
@@ -82,7 +78,7 @@ func (s *MangaClientTestSuite) TestGetMangaList_ReturnsSuccessfulResponse() {
 	defer vcr.Stop()
 
 	mc := NewMangaClient()
-	res, err := mc.GetMangaList(s.ctx)
+	res, err := mc.GetMangaList()
 
 	assert.Nil(s.T(), err)
 	assert.True(s.T(), len(res.Mangas) > 0)

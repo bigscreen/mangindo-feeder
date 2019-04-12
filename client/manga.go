@@ -1,7 +1,6 @@
 package client
 
 import (
-	"context"
 	"encoding/json"
 	"errors"
 	"github.com/bigscreen/mangindo-feeder/config"
@@ -14,7 +13,7 @@ import (
 )
 
 type MangaClient interface {
-	GetMangaList(ctx context.Context) (*domain.MangaListResponse, error)
+	GetMangaList() (*domain.MangaListResponse, error)
 }
 
 type mangaClient struct {
@@ -25,7 +24,7 @@ func buildMangaListEndpoint() string {
 	return config.BaseURL() + "/official/2016/main.php"
 }
 
-func (c *mangaClient) GetMangaList(ctx context.Context) (*domain.MangaListResponse, error) {
+func (c *mangaClient) GetMangaList() (*domain.MangaListResponse, error) {
 	res, err := c.httpClient.Get(buildMangaListEndpoint(), nil)
 	if err != nil {
 		errMsg := constants.ServerError + " " + err.Error()
