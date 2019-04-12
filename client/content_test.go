@@ -1,7 +1,6 @@
 package client
 
 import (
-	"context"
 	"github.com/ad2games/vcr-go"
 	"github.com/bigscreen/mangindo-feeder/appcontext"
 	"github.com/bigscreen/mangindo-feeder/config"
@@ -19,15 +18,12 @@ import (
 
 type ContentClientTestSuite struct {
 	suite.Suite
-	ctx context.Context
 }
 
 func (s *ContentClientTestSuite) SetupSuite() {
 	config.Load()
 	appcontext.Initiate()
 	logger.SetupLogger()
-
-	s.ctx = context.Background()
 }
 
 func TestContentClientTestSuite(t *testing.T) {
@@ -41,7 +37,7 @@ func (s *ContentClientTestSuite) TestGetContentList_ReturnsError_WhenCallTimesOu
 	config.Load()
 
 	cc := NewContentClient()
-	res, err := cc.GetContentList(s.ctx, "bleach", 657.0)
+	res, err := cc.GetContentList("bleach", 657.0)
 
 	os.Setenv("HYSTRIX_TIMEOUT_MS", ht)
 	config.Load()
@@ -56,7 +52,7 @@ func (s *ContentClientTestSuite) TestGetContentList_ReturnsError_WhenOriginServe
 		Reply(http.StatusInternalServerError)
 
 	cc := NewContentClient()
-	res, err := cc.GetContentList(s.ctx, "bleach", 657.0)
+	res, err := cc.GetContentList("bleach", 657.0)
 
 	assert.NotNil(s.T(), err)
 	assert.Equal(s.T(), "origin server error: Server is down: returned status code: 500", err.Error())
@@ -70,7 +66,7 @@ func (s *ContentClientTestSuite) TestGetContentList_ReturnsError_WhenOriginServe
 		Body(ioutil.NopCloser(strings.NewReader("some error")))
 
 	cc := NewContentClient()
-	res, err := cc.GetContentList(s.ctx, "bleach", 657.0)
+	res, err := cc.GetContentList("bleach", 657.0)
 
 	assert.NotNil(s.T(), err)
 	assert.Equal(s.T(), constants.InvalidJSONResponseError, err.Error())
@@ -82,7 +78,7 @@ func (s *ContentClientTestSuite) TestGetContentList_ReturnsSuccessfulResponse() 
 	defer vcr.Stop()
 
 	cc := NewContentClient()
-	res, err := cc.GetContentList(s.ctx, "bleach", 657.0)
+	res, err := cc.GetContentList("bleach", 657.0)
 
 	assert.Nil(s.T(), err)
 	assert.True(s.T(), len(res.Contents) > 0)

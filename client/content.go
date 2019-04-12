@@ -1,7 +1,6 @@
 package client
 
 import (
-	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -15,7 +14,7 @@ import (
 )
 
 type ContentClient interface {
-	GetContentList(ctx context.Context, titleId string, chapter float32) (*domain.ContentListResponse, error)
+	GetContentList(titleId string, chapter float32) (*domain.ContentListResponse, error)
 }
 
 type contentClient struct {
@@ -28,7 +27,7 @@ func buildContentListEndpoint(titleId string, chapter float32) string {
 	return config.BaseURL() + "/official/2016/image_list.php" + qParams
 }
 
-func (c *contentClient) GetContentList(ctx context.Context, titleId string, chapter float32) (*domain.ContentListResponse, error) {
+func (c *contentClient) GetContentList(titleId string, chapter float32) (*domain.ContentListResponse, error) {
 	res, err := c.httpClient.Get(buildContentListEndpoint(titleId, chapter), nil)
 	if err != nil {
 		errMsg := constants.ServerError + " " + err.Error()
