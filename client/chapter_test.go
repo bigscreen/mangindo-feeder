@@ -1,7 +1,6 @@
 package client
 
 import (
-	"context"
 	"github.com/ad2games/vcr-go"
 	"github.com/bigscreen/mangindo-feeder/appcontext"
 	"github.com/bigscreen/mangindo-feeder/config"
@@ -19,15 +18,12 @@ import (
 
 type ChapterClientTestSuite struct {
 	suite.Suite
-	ctx context.Context
 }
 
 func (s *ChapterClientTestSuite) SetupSuite() {
 	config.Load()
 	appcontext.Initiate()
 	logger.SetupLogger()
-
-	s.ctx = context.Background()
 }
 
 func TestChapterClientTestSuite(t *testing.T) {
@@ -43,7 +39,7 @@ func (s *ChapterClientTestSuite) TestGetChapterList_ReturnsError_WhenCallTimesOu
 	config.Load()
 
 	cc := NewChapterClient()
-	res, err := cc.GetChapterList(s.ctx, titleId)
+	res, err := cc.GetChapterList(titleId)
 
 	os.Setenv("HYSTRIX_TIMEOUT_MS", ht)
 	config.Load()
@@ -58,7 +54,7 @@ func (s *ChapterClientTestSuite) TestGetChapterList_ReturnsError_WhenOriginServe
 		Reply(http.StatusInternalServerError)
 
 	cc := NewChapterClient()
-	res, err := cc.GetChapterList(s.ctx, titleId)
+	res, err := cc.GetChapterList(titleId)
 
 	assert.NotNil(s.T(), err)
 	assert.Equal(s.T(), "origin server error: Server is down: returned status code: 500", err.Error())
@@ -72,7 +68,7 @@ func (s *ChapterClientTestSuite) TestGetChapterList_ReturnsError_WhenOriginServe
 		Body(ioutil.NopCloser(strings.NewReader("some error")))
 
 	cc := NewChapterClient()
-	res, err := cc.GetChapterList(s.ctx, titleId)
+	res, err := cc.GetChapterList(titleId)
 
 	assert.NotNil(s.T(), err)
 	assert.Equal(s.T(), constants.InvalidJSONResponseError, err.Error())
@@ -84,7 +80,7 @@ func (s *ChapterClientTestSuite) TestGetChapterList_ReturnsSuccessfulResponse() 
 	defer vcr.Stop()
 
 	cc := NewChapterClient()
-	res, err := cc.GetChapterList(s.ctx, titleId)
+	res, err := cc.GetChapterList(titleId)
 
 	assert.Nil(s.T(), err)
 	assert.True(s.T(), len(res.Chapters) > 0)

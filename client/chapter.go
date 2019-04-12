@@ -1,7 +1,6 @@
 package client
 
 import (
-	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -15,7 +14,7 @@ import (
 )
 
 type ChapterClient interface {
-	GetChapterList(ctx context.Context, titleId string) (*domain.ChapterListResponse, error)
+	GetChapterList(titleId string) (*domain.ChapterListResponse, error)
 }
 
 type chapterClient struct {
@@ -28,7 +27,7 @@ func buildChapterListEndpoint(titleId string) string {
 	return config.BaseURL() + "/official/2016/chapter_list.php" + qParam
 }
 
-func (c *chapterClient) GetChapterList(ctx context.Context, titleId string) (*domain.ChapterListResponse, error) {
+func (c *chapterClient) GetChapterList(titleId string) (*domain.ChapterListResponse, error) {
 	res, err := c.httpClient.Get(buildChapterListEndpoint(titleId), nil)
 	if err != nil {
 		errMsg := constants.ServerError + " " + err.Error()
