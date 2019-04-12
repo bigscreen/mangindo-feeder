@@ -4,10 +4,12 @@ import (
 	"context"
 	"github.com/bigscreen/mangindo-feeder/appcontext"
 	"github.com/bigscreen/mangindo-feeder/config"
+	"github.com/bigscreen/mangindo-feeder/constants"
 	"github.com/bigscreen/mangindo-feeder/logger"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
 	"gopkg.in/h2non/gock.v1"
+	"io/ioutil"
 	"net/http"
 	"os"
 	"strings"
@@ -57,5 +59,19 @@ func (s *ContentClientTestSuite) TestGetContentList_ReturnsError_WhenOriginServe
 
 	assert.NotNil(s.T(), err)
 	assert.Equal(s.T(), "origin server error: Server is down: returned status code: 500", err.Error())
+	assert.Nil(s.T(), res)
+}
+
+func (s *ContentClientTestSuite) TestGetContentList_ReturnsError_WhenOriginServerReturnsBrokenJSONResponse() {
+	defer gock.Off()
+	gock.New(buildContentListEndpoint("bleach", 657.0)).
+		Reply(http.StatusOK).
+		Body(ioutil.NopCloser(strings.NewReader("some error")))
+
+	cc := NewContentClient()
+	res, err := cc.GetContentList(s.ctx, "bleach", 657.0)
+
+	assert.NotNil(s.T(), err)
+	assert.Equal(s.T(), constants.InvalidJSONResponseError, err.Error())
 	assert.Nil(s.T(), res)
 }
