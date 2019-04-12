@@ -16,3 +16,15 @@ func (m MockContentClient) GetContentList(titleId string, chapter float32) (*dom
 	}
 	return args.Get(0).(*domain.ContentListResponse), nil
 }
+
+type MockChapterClient struct {
+	mock.Mock
+}
+
+func (m MockChapterClient) GetChapterList(titleId string) (*domain.ChapterListResponse, error) {
+	args := m.Called(titleId)
+	if args.Get(1) != nil {
+		return nil, args.Get(1).(error)
+	}
+	return args.Get(0).(*domain.ChapterListResponse), nil
+}
