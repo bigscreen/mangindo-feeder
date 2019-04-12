@@ -2,6 +2,7 @@ package client
 
 import (
 	"context"
+	"github.com/ad2games/vcr-go"
 	"github.com/bigscreen/mangindo-feeder/appcontext"
 	"github.com/bigscreen/mangindo-feeder/config"
 	"github.com/bigscreen/mangindo-feeder/constants"
@@ -37,12 +38,15 @@ const titleId = "bleach"
 
 func (s *ChapterClientTestSuite) TestGetChapterList_ReturnsError_WhenCallTimesOut() {
 	ht := os.Getenv("HYSTRIX_TIMEOUT_MS")
+
 	os.Setenv("HYSTRIX_TIMEOUT_MS", "1")
-	defer os.Setenv("HYSTRIX_TIMEOUT_MS", ht)
 	config.Load()
 
 	cc := NewChapterClient()
 	res, err := cc.GetChapterList(s.ctx, titleId)
+
+	os.Setenv("HYSTRIX_TIMEOUT_MS", ht)
+	config.Load()
 
 	assert.Contains(s.T(), strings.ToUpper(err.Error()), "TIMEOUT")
 	assert.Nil(s.T(), res)
@@ -73,4 +77,15 @@ func (s *ChapterClientTestSuite) TestGetChapterList_ReturnsError_WhenOriginServe
 	assert.NotNil(s.T(), err)
 	assert.Equal(s.T(), constants.InvalidJSONResponseError, err.Error())
 	assert.Nil(s.T(), res)
+}
+
+func (s *ChapterClientTestSuite) TestGetChapterList_ReturnsSuccessfulResponse() {
+	vcr.Start("get_chapter_list_valid_response", nil)
+	defer vcr.Stop()
+
+	cc := NewChapterClient()
+	res, err := cc.GetChapterList(s.ctx, titleId)
+
+	assert.Nil(s.T(), err)
+	assert.True(s.T(), len(res.Chapters) > 0)
 }

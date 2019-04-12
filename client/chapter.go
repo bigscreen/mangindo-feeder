@@ -46,7 +46,7 @@ func (c *chapterClient) GetChapterList(ctx context.Context, titleId string) (*do
 		logger.Errorf("Error when unmarshalling origin response: %s", err.Error())
 		return nil, errors.New(constants.InvalidJSONResponseError)
 	}
-	return nil, err
+	return response, err
 }
 
 func NewChapterClient() *chapterClient {
