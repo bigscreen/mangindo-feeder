@@ -7,6 +7,8 @@ import (
 	"github.com/bigscreen/mangindo-feeder/logger"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
+	"gopkg.in/h2non/gock.v1"
+	"net/http"
 	"os"
 	"strings"
 	"testing"
@@ -29,6 +31,8 @@ func TestChapterClientTestSuite(t *testing.T) {
 	suite.Run(t, new(ChapterClientTestSuite))
 }
 
+const titleId = "bleach"
+
 func (s *ChapterClientTestSuite) TestGetChapterList_ReturnsError_WhenCallTimesOut() {
 	ht := os.Getenv("HYSTRIX_TIMEOUT_MS")
 	os.Setenv("HYSTRIX_TIMEOUT_MS", "1")
@@ -36,8 +40,21 @@ func (s *ChapterClientTestSuite) TestGetChapterList_ReturnsError_WhenCallTimesOu
 	config.Load()
 
 	cc := NewChapterClient()
-	res, err := cc.GetChapterList(s.ctx, "bleach")
+	res, err := cc.GetChapterList(s.ctx, titleId)
 
 	assert.Contains(s.T(), strings.ToUpper(err.Error()), "TIMEOUT")
+	assert.Nil(s.T(), res)
+}
+
+func (s *ChapterClientTestSuite) TestGetChapterList_ReturnsError_WhenOriginServerReturns5xxStatusCode() {
+	defer gock.Off()
+	gock.New(buildChapterListEndpoint(titleId)).
+		Reply(http.StatusInternalServerError)
+
+	cc := NewChapterClient()
+	res, err := cc.GetChapterList(s.ctx, titleId)
+
+	assert.NotNil(s.T(), err)
+	assert.Equal(s.T(), "origin server error: Server is down: returned status code: 500", err.Error())
 	assert.Nil(s.T(), res)
 }
