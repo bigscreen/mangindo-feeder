@@ -2,12 +2,15 @@ package client
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"github.com/bigscreen/mangindo-feeder/config"
 	"github.com/bigscreen/mangindo-feeder/constants"
 	"github.com/bigscreen/mangindo-feeder/domain"
+	"github.com/bigscreen/mangindo-feeder/logger"
 	"github.com/gojektech/heimdall"
+	"io/ioutil"
 	"time"
 )
 
@@ -26,12 +29,23 @@ func buildChapterListEndpoint(titleId string) string {
 }
 
 func (c *chapterClient) GetChapterList(ctx context.Context, titleId string) (*domain.ChapterListResponse, error) {
-	_, err := c.httpClient.Get(buildChapterListEndpoint(titleId), nil)
+	res, err := c.httpClient.Get(buildChapterListEndpoint(titleId), nil)
 	if err != nil {
 		errMsg := constants.ServerError + " " + err.Error()
 		return nil, errors.New(errMsg)
 	}
 
+	body, err := ioutil.ReadAll(res.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	var response *domain.ChapterListResponse
+	err = json.Unmarshal(body, &response)
+	if err != nil {
+		logger.Errorf("Error when unmarshalling origin response: %s", err.Error())
+		return nil, errors.New(constants.InvalidJSONResponseError)
+	}
 	return nil, err
 }
 
