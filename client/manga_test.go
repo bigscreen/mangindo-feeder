@@ -20,7 +20,6 @@ import (
 type MangaClientTestSuite struct {
 	suite.Suite
 	ctx context.Context
-	mc  *mangaClient
 }
 
 func (s *MangaClientTestSuite) SetupSuite() {
@@ -29,7 +28,6 @@ func (s *MangaClientTestSuite) SetupSuite() {
 	logger.SetupLogger()
 
 	s.ctx = context.Background()
-	s.mc = NewMangaClient()
 }
 
 func TestMangaClientTestSuite(t *testing.T) {
