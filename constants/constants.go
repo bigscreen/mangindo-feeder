@@ -1,3 +1,7 @@
 package constants
 
-const WorkerName = "mangindo-feeder-worker"
+const (
+	WorkerName = "mangindo-feeder-worker"
+
+	GetMangaListCommand = "GetMangaListCommand"
+)

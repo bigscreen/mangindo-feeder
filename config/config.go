@@ -1,6 +1,7 @@
 package config
 
 import (
+	"github.com/gojektech/heimdall"
 	"github.com/spf13/viper"
 )
 
@@ -12,6 +13,8 @@ type Config struct {
 	redisPort          int
 	redisPool          int
 	workerRedisAddress string
+	baseUrl            string
+	hystrixConfig      heimdall.HystrixCommandConfig
 }
 
 var appConfig *Config
@@ -37,6 +40,13 @@ func Load() {
 		redisPort:          getIntOrPanic("REDIS_PORT"),
 		redisPool:          getIntOrPanic("REDIS_POOL"),
 		workerRedisAddress: fatalGetString("WORKER_REDIS_ADDRESS"),
+		baseUrl:            fatalGetString("ORIGIN_SERVER_BASE_URL"),
+		hystrixConfig: heimdall.HystrixCommandConfig{
+			Timeout:               getIntOrPanic("HYSTRIX_TIMEOUT_MS"),
+			MaxConcurrentRequests: getIntOrPanic("HYSTRIX_MAX_CONCURRENT_REQUESTS"),
+			SleepWindow:           getIntOrPanic("HYSTRIX_SLEEP_WINDOW_MS"),
+			ErrorPercentThreshold: getIntOrPanic("HYSTRIX_ERROR_THRESHOLD"),
+		},
 	}
 }
 
@@ -66,4 +76,12 @@ func RedisPool() int {
 
 func WorkerRedisAddress() string {
 	return appConfig.workerRedisAddress
+}
+
+func BaseURL() string {
+	return appConfig.baseUrl
+}
+
+func HystrixConfig() heimdall.HystrixCommandConfig {
+	return appConfig.hystrixConfig
 }

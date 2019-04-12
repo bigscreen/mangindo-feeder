@@ -10,6 +10,26 @@
   version = "v1.4.1"
 
 [[projects]]
+  branch = "master"
+  digest = "1:783ded6ebc6fd72a11b4e924826287a745f040d88af3ab9788ff0c75fa206124"
+  name = "github.com/ad2games/vcr-go"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "faa03fdbd7ac152c3937546c2e862ce74031ed92"
+
+[[projects]]
+  branch = "master"
+  digest = "1:e307126636dff23d73e1aa30f6cb117ce76f493548c62ff0e7633f903c9172aa"
+  name = "github.com/afex/hystrix-go"
+  packages = [
+    "hystrix",
+    "hystrix/metric_collector",
+    "hystrix/rolling",
+  ]
+  pruneopts = "UT"
+  revision = "fa1af6a1f4f56e0e50d427fe901cd604d8c6fb8a"
+
+[[projects]]
   digest = "1:fed1f537c2f1269fe475a8556c393fe466641682d73ef8fd0491cd3aa1e47bad"
   name = "github.com/certifi/gocertifi"
   packages = ["."]
@@ -74,6 +94,22 @@
   version = "v0.5.1"
 
 [[projects]]
+  digest = "1:bf8236bc8148398b954c1b68f6fc0f352c5fbe59e0e98c635d3640c561ea2f84"
+  name = "github.com/gojektech/heimdall"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "f19a05cb7eebd406539137b5ddc0c49c1fb4815c"
+  version = "v3.0.1"
+
+[[projects]]
+  digest = "1:4f9da36d750deeff2ed82b44b15245337d1a2f1bf8a671c80f97059d7ce8517d"
+  name = "github.com/gojektech/valkyrie"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "6aee720afcdffc337029305c126e0079491063f0"
+  version = "v1.0"
+
+[[projects]]
   digest = "1:38ec74012390146c45af1f92d46e5382b50531247929ff3a685d2b2be65155ac"
   name = "github.com/gomodule/redigo"
   packages = [
@@ -91,6 +127,14 @@
   pruneopts = "UT"
   revision = "c5c6c98bc25355028a63748a498942a6398ccd22"
   version = "v1.7.1"
+
+[[projects]]
+  digest = "1:574f4e0c57e045c9d109d23c60c586b2198eaead53daa97ed5f65c616e22a9b0"
+  name = "github.com/h2non/parth"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "b4df798d65426f8c8ab5ca5f9987aec5575d26c9"
+  version = "v2.0.1"
 
 [[projects]]
   digest = "1:c0d19ab64b32ce9fe5cf4ddceba78d5bc9807f0016db6b1183599da3dcc24d10"
@@ -211,11 +255,12 @@
   version = "v1.3.2"
 
 [[projects]]
-  digest = "1:5da8ce674952566deae4dbc23d07c85caafc6cfa815b0b3e03e41979cedb8750"
+  digest = "1:8ff03ccc603abb0d7cce94d34b613f5f6251a9e1931eba1a3f9888a9029b055c"
   name = "github.com/stretchr/testify"
   packages = [
     "assert",
     "require",
+    "suite",
   ]
   pruneopts = "UT"
   revision = "ffdc059bfe9ce6a4e144ba849dbedead332c6053"
@@ -253,6 +298,14 @@
   version = "v0.3.0"
 
 [[projects]]
+  digest = "1:fb332c4b0e1944eb132e2075ea0447873a1081ecdabb140ff9696327ac8b947b"
+  name = "gopkg.in/h2non/gock.v1"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "ba88c4862a27596539531ce469478a91bc5a0511"
+  version = "v1.0.14"
+
+[[projects]]
   digest = "1:4d2e5a73dc1500038e504a8d78b986630e3626dc027bc030ba5c75da257cdb96"
   name = "gopkg.in/yaml.v2"
   packages = ["."]
@@ -265,17 +318,21 @@
   analyzer-version = 1
   input-imports = [
     "github.com/Sirupsen/logrus",
+    "github.com/ad2games/vcr-go",
     "github.com/codegangsta/negroni",
     "github.com/getsentry/raven-go",
     "github.com/go-redis/redis",
     "github.com/gocraft/work",
+    "github.com/gojektech/heimdall",
     "github.com/gomodule/redigo/redis",
     "github.com/gorilla/mux",
     "github.com/pkg/errors",
     "github.com/spf13/viper",
     "github.com/stretchr/testify/assert",
     "github.com/stretchr/testify/require",
+    "github.com/stretchr/testify/suite",
     "github.com/urfave/cli",
+    "gopkg.in/h2non/gock.v1",
   ]
   solver-name = "gps-cdcl"
   solver-version = 1
