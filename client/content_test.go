@@ -7,6 +7,8 @@ import (
 	"github.com/bigscreen/mangindo-feeder/logger"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
+	"gopkg.in/h2non/gock.v1"
+	"net/http"
 	"os"
 	"strings"
 	"testing"
@@ -42,5 +44,18 @@ func (s *ContentClientTestSuite) TestGetContentList_ReturnsError_WhenCallTimesOu
 	config.Load()
 
 	assert.Contains(s.T(), strings.ToUpper(err.Error()), "TIMEOUT")
+	assert.Nil(s.T(), res)
+}
+
+func (s *ContentClientTestSuite) TestGetContentList_ReturnsError_WhenOriginServerReturns5xxStatusCode() {
+	defer gock.Off()
+	gock.New(buildContentListEndpoint("bleach", 657.0)).
+		Reply(http.StatusInternalServerError)
+
+	cc := NewContentClient()
+	res, err := cc.GetContentList(s.ctx, "bleach", 657.0)
+
+	assert.NotNil(s.T(), err)
+	assert.Equal(s.T(), "origin server error: Server is down: returned status code: 500", err.Error())
 	assert.Nil(s.T(), res)
 }
