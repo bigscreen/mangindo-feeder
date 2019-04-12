@@ -13,11 +13,6 @@ import (
 	"time"
 )
 
-const (
-	ServerError              = "origin server error:"
-	InvalidJSONResponseError = "invalid JSON response from origin server"
-)
-
 type MangaClient interface {
 	GetMangaList(ctx context.Context) (*domain.MangaListResponse, error)
 }
@@ -33,7 +28,7 @@ func buildMangaListEndpoint() string {
 func (c *mangaClient) GetMangaList(ctx context.Context) (*domain.MangaListResponse, error) {
 	res, err := c.httpClient.Get(buildMangaListEndpoint(), nil)
 	if err != nil {
-		errMsg := ServerError + " " + err.Error()
+		errMsg := constants.ServerError + " " + err.Error()
 		return nil, errors.New(errMsg)
 	}
 
@@ -46,7 +41,7 @@ func (c *mangaClient) GetMangaList(ctx context.Context) (*domain.MangaListRespon
 	err = json.Unmarshal(body, &response)
 	if err != nil {
 		logger.Errorf("Error when unmarshalling origin response: %s", err.Error())
-		return nil, errors.New(InvalidJSONResponseError)
+		return nil, errors.New(constants.InvalidJSONResponseError)
 	}
 	return response, err
 }
