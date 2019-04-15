@@ -36,6 +36,11 @@ func (c *mangaClient) GetMangaList() (*domain.MangaListResponse, error) {
 		return nil, err
 	}
 
+	if string(body) == "null" {
+		logger.Error("Origin response body is null")
+		return nil, errors.New(constants.InvalidJSONResponseError)
+	}
+
 	var response *domain.MangaListResponse
 	err = json.Unmarshal(body, &response)
 	if err != nil {

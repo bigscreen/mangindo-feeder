@@ -73,6 +73,20 @@ func (s *MangaClientTestSuite) TestGetMangaList_ReturnsError_WhenOriginServerRet
 	assert.Nil(s.T(), res)
 }
 
+func (s *MangaClientTestSuite) TestGetMangaList_ReturnsError_WhenOriginServerReturnsNull() {
+	defer gock.Off()
+	gock.New(buildMangaListEndpoint()).
+		Reply(http.StatusOK).
+		Body(ioutil.NopCloser(strings.NewReader("null")))
+
+	mc := NewMangaClient()
+	res, err := mc.GetMangaList()
+
+	assert.NotNil(s.T(), err)
+	assert.Equal(s.T(), constants.InvalidJSONResponseError, err.Error())
+	assert.Nil(s.T(), res)
+}
+
 func (s *MangaClientTestSuite) TestGetMangaList_ReturnsSuccessfulResponse() {
 	vcr.Start("get_manga_list_valid_response", nil)
 	defer vcr.Stop()
