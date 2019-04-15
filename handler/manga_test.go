@@ -77,6 +77,7 @@ func (s *MangaHandlerTestSuite) TestGetMangas_ReturnsSuccess_WhenOnlyPopularMang
 	rr := httptest.NewRecorder()
 	pms := []contract.Manga{getFakePopularManga()}
 	mr := contract.MangaResponse{
+		Success:       true,
 		PopularMangas: pms,
 		LatestMangas:  []contract.Manga{},
 	}
@@ -101,6 +102,7 @@ func (s *MangaHandlerTestSuite) TestGetMangas_ReturnsSuccess_WhenOnlyLatestManga
 	rr := httptest.NewRecorder()
 	lms := []contract.Manga{getFakeLatestManga()}
 	mr := contract.MangaResponse{
+		Success:       true,
 		PopularMangas: []contract.Manga{},
 		LatestMangas:  lms,
 	}
@@ -126,6 +128,7 @@ func (s *MangaHandlerTestSuite) TestGetMangas_ReturnsSuccess_WhenPopularAndLates
 	pms := []contract.Manga{getFakePopularManga()}
 	lms := []contract.Manga{getFakeLatestManga()}
 	mr := contract.MangaResponse{
+		Success:       true,
 		PopularMangas: pms,
 		LatestMangas:  lms,
 	}
