@@ -8,8 +8,8 @@ type ContentRequest struct {
 }
 
 type ContentResponse struct {
-	BaseResponse
-	Contents []Content `json:"contents,omitempty"`
+	Success  bool      `json:"success"`
+	Contents []Content `json:"contents"`
 }
 
 type Content struct {

@@ -9,4 +9,6 @@ const (
 	GetMangaListCommand = "GetMangaListCommand"
 	GetChapterListCommand = "GetChapterListCommand"
 	GetContentListCommand = "GetContentListCommand"
+
+	GetMangasApiPath = "/mangindo/v1/mangas"
 )

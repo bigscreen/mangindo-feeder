@@ -1,6 +1,6 @@
 package contract
 
-type BaseResponse struct {
+type ErrorResponse struct {
 	Success bool   `json:"success"`
-	Error   string `json:"error,omitempty"`
+	Error   string `json:"error"`
 }

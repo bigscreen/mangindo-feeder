@@ -5,8 +5,8 @@ type ChapterRequest struct {
 }
 
 type ChapterResponse struct {
-	BaseResponse
-	Chapters []Chapter `json:"chapters,omitempty"`
+	Success  bool      `json:"success"`
+	Chapters []Chapter `json:"chapters"`
 }
 
 type Chapter struct {

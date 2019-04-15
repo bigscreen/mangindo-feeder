@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/bigscreen/mangindo-feeder/config"
 	"github.com/bigscreen/mangindo-feeder/logger"
+	"github.com/bigscreen/mangindo-feeder/service"
 	"github.com/codegangsta/negroni"
 	"github.com/getsentry/raven-go"
 	"net/http"
@@ -16,7 +17,8 @@ import (
 func StartAPIServer() {
 	logger.Info("Starting mangindo-feeder service")
 
-	muxRouter := Router()
+	deps := service.InstantiateDependencies()
+	muxRouter := Router(deps)
 	handlerFunc := muxRouter.ServeHTTP
 
 	n := negroni.New(negroni.NewRecovery())

@@ -2,6 +2,8 @@ package error
 
 import (
 	"fmt"
+	"net/http"
+	"reflect"
 )
 
 type GenericError struct {
@@ -26,4 +28,15 @@ func (e *NotFoundError) Error() string {
 
 func NewNotFoundError(s string) *NotFoundError {
 	return &NotFoundError{S: s}
+}
+
+func GetStatusCodeOf(objectPtr interface{}) int {
+	if isErrorInstanceOf(objectPtr, (*NotFoundError)(nil)) {
+		return http.StatusNotFound
+	}
+	return http.StatusInternalServerError
+}
+
+func isErrorInstanceOf(objectPtr, typePtr interface{}) bool {
+	return reflect.TypeOf(objectPtr) == reflect.TypeOf(typePtr)
 }

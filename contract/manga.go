@@ -14,7 +14,7 @@ type Manga struct {
 }
 
 type MangaResponse struct {
-	BaseResponse
-	PopularMangas []Manga `json:"popular_mangas,omitempty"`
-	LatestMangas  []Manga `json:"latest_mangas,omitempty"`
+	Success       bool    `json:"success"`
+	PopularMangas []Manga `json:"popular_mangas"`
+	LatestMangas  []Manga `json:"latest_mangas"`
 }
