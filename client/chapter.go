@@ -39,6 +39,11 @@ func (c *chapterClient) GetChapterList(titleId string) (*domain.ChapterListRespo
 		return nil, err
 	}
 
+	if string(body) == "null" {
+		logger.Error("Origin response body is null")
+		return nil, errors.New(constants.InvalidJSONResponseError)
+	}
+
 	var response *domain.ChapterListResponse
 	err = json.Unmarshal(body, &response)
 	if err != nil {

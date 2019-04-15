@@ -61,6 +61,20 @@ func (s *ChapterClientTestSuite) TestGetChapterList_ReturnsError_WhenOriginServe
 	assert.Nil(s.T(), res)
 }
 
+func (s *ChapterClientTestSuite) TestGetChapterList_ReturnsError_WhenOriginServerReturnsNull() {
+	defer gock.Off()
+	gock.New(buildChapterListEndpoint(titleId)).
+		Reply(http.StatusOK).
+		Body(ioutil.NopCloser(strings.NewReader("null")))
+
+	cc := NewChapterClient()
+	res, err := cc.GetChapterList(titleId)
+
+	assert.NotNil(s.T(), err)
+	assert.Equal(s.T(), constants.InvalidJSONResponseError, err.Error())
+	assert.Nil(s.T(), res)
+}
+
 func (s *ChapterClientTestSuite) TestGetChapterList_ReturnsError_WhenOriginServerReturnsBrokenJSONResponse() {
 	defer gock.Off()
 	gock.New(buildChapterListEndpoint(titleId)).
