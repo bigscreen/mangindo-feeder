@@ -38,7 +38,7 @@ func (s *MangaServiceTestSuite) TestGetMangas_ReturnsError_WhenClientReturnsErro
 
 	assert.Nil(s.T(), pMangas)
 	assert.Nil(s.T(), lMangas)
-	assert.Equal(s.T(), "some error", err.Error())
+	assert.Equal(s.T(), mErr.NewGenericError().Error(), err.Error())
 	mc.AssertExpectations(s.T())
 }
 

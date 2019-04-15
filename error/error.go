@@ -4,6 +4,18 @@ import (
 	"fmt"
 )
 
+type GenericError struct {
+	S string
+}
+
+func (e *GenericError) Error() string {
+	return e.S
+}
+
+func NewGenericError() *GenericError {
+	return &GenericError{S: "Something went wrong"}
+}
+
 type NotFoundError struct {
 	S string
 }

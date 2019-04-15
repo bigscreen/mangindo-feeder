@@ -44,7 +44,7 @@ func isPopularManga(titleId string) bool {
 func (s *mangaService) GetMangas() (popular *[]contract.Manga, latest *[]contract.Manga, err error) {
 	ml, err := s.mClient.GetMangaList()
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, mErr.NewGenericError()
 	}
 
 	if len(ml.Mangas) == 0 {
