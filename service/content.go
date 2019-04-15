@@ -17,7 +17,7 @@ type contentService struct {
 func (s *contentService) GetContents(req contract.ContentRequest) (*[]contract.Content, error) {
 	cl, err := s.cClient.GetContentList(req.TitleId, req.Chapter)
 	if err != nil {
-		return nil, err
+		return nil, mErr.NewGenericError()
 	}
 
 	if len(cl.Contents) == 0 {

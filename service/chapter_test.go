@@ -38,7 +38,7 @@ func (s *ChapterServiceTestSuite) TestGetChapters_ReturnsError_WhenClientReturns
 	cl, err := cs.GetChapters(req)
 
 	assert.Nil(s.T(), cl)
-	assert.Equal(s.T(), "some error", err.Error())
+	assert.Equal(s.T(), mErr.NewGenericError().Error(), err.Error())
 	cc.AssertExpectations(s.T())
 }
 

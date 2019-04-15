@@ -24,7 +24,7 @@ func getFormattedChapterNumber(chapter float32) string {
 func (s *chapterService) GetChapters(req contract.ChapterRequest) (*[]contract.Chapter, error) {
 	cl, err := s.cClient.GetChapterList(req.TitleId)
 	if err != nil {
-		return nil, err
+		return nil, mErr.NewGenericError()
 	}
 
 	if len(cl.Chapters) == 0 {
