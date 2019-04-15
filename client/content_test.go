@@ -59,6 +59,20 @@ func (s *ContentClientTestSuite) TestGetContentList_ReturnsError_WhenOriginServe
 	assert.Nil(s.T(), res)
 }
 
+func (s *ContentClientTestSuite) TestGetContentList_ReturnsError_WhenOriginServerReturnsNull() {
+	defer gock.Off()
+	gock.New(buildContentListEndpoint("bleach", 657.0)).
+		Reply(http.StatusOK).
+		Body(ioutil.NopCloser(strings.NewReader("null")))
+
+	cc := NewContentClient()
+	res, err := cc.GetContentList("bleach", 657.0)
+
+	assert.NotNil(s.T(), err)
+	assert.Equal(s.T(), constants.InvalidJSONResponseError, err.Error())
+	assert.Nil(s.T(), res)
+}
+
 func (s *ContentClientTestSuite) TestGetContentList_ReturnsError_WhenOriginServerReturnsBrokenJSONResponse() {
 	defer gock.Off()
 	gock.New(buildContentListEndpoint("bleach", 657.0)).
