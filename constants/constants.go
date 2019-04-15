@@ -11,4 +11,7 @@ const (
 	GetContentListCommand = "GetContentListCommand"
 
 	GetMangasApiPath = "/mangindo/v1/mangas"
+	GetChaptersApiPath = "/mangindo/v1/chapters"
+
+	TitleIdKeyParam = "title_id"
 )

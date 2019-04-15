@@ -22,6 +22,13 @@ func (s *ErrorTestSuite) TestGetStatusCodeOf_Returns500() {
 	assert.Equal(s.T(), http.StatusInternalServerError, code)
 }
 
+func (s *ErrorTestSuite) TestGetStatusCodeOf_Returns400() {
+	err := NewValidationError(map[string]string{})
+	code := GetStatusCodeOf(err)
+
+	assert.Equal(s.T(), http.StatusBadRequest, code)
+}
+
 func (s *ErrorTestSuite) TestGetStatusCodeOf_Returns404() {
 	err := NewNotFoundError("foo")
 	code := GetStatusCodeOf(err)

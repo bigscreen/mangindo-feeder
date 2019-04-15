@@ -22,3 +22,15 @@ func (m MockMangaService) GetMangas() (popular *[]contract.Manga, latest *[]cont
 	}
 	return args.Get(0).(*[]contract.Manga), args.Get(1).(*[]contract.Manga), nil
 }
+
+type MockChapterService struct {
+	mock.Mock
+}
+
+func (m MockChapterService) GetChapters(req contract.ChapterRequest) (*[]contract.Chapter, error) {
+	args := m.Called(req)
+	if args.Get(1) != nil {
+		return nil, args.Get(1).(error)
+	}
+	return args.Get(0).(*[]contract.Chapter), nil
+}
