@@ -4,6 +4,7 @@ import (
 	"github.com/bigscreen/mangindo-feeder/client"
 	"github.com/bigscreen/mangindo-feeder/contract"
 	mErr "github.com/bigscreen/mangindo-feeder/error"
+	"strings"
 )
 
 type ContentService interface {
@@ -12,6 +13,10 @@ type ContentService interface {
 
 type contentService struct {
 	cClient client.ContentClient
+}
+
+func getEncodedUrl(url string) string {
+	return strings.Replace(url, " ", "%20", -1)
 }
 
 func (s *contentService) GetContents(req contract.ContentRequest) (*[]contract.Content, error) {
@@ -26,7 +31,7 @@ func (s *contentService) GetContents(req contract.ContentRequest) (*[]contract.C
 
 	var contents []contract.Content
 	for _, dc := range cl.Contents {
-		content := contract.Content{ImageURL: dc.ImageURL}
+		content := contract.Content{ImageURL: getEncodedUrl(dc.ImageURL)}
 		contents = append(contents, content)
 	}
 

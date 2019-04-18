@@ -73,6 +73,6 @@ func (s *ContentServiceTestSuite) TestGetContents_ReturnsSuccess_WhenContentList
 
 	assert.Nil(s.T(), err)
 	assert.True(s.T(), len(*cl) > 0)
-	assert.Equal(s.T(), ct.ImageURL, (*cl)[0].ImageURL)
+	assert.Equal(s.T(), getEncodedUrl(ct.ImageURL), (*cl)[0].ImageURL)
 	cc.AssertExpectations(s.T())
 }
