@@ -34,3 +34,15 @@ func (m MockChapterService) GetChapters(req contract.ChapterRequest) (*[]contrac
 	}
 	return args.Get(0).(*[]contract.Chapter), nil
 }
+
+type MockContentService struct {
+	mock.Mock
+}
+
+func (m MockContentService) GetContents(req contract.ContentRequest) (*[]contract.Content, error) {
+	args := m.Called(req)
+	if args.Get(1) != nil {
+		return nil, args.Get(1).(error)
+	}
+	return args.Get(0).(*[]contract.Content), nil
+}

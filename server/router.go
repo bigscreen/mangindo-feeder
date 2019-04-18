@@ -14,6 +14,7 @@ func Router(deps service.Dependencies) *mux.Router {
 	router.HandleFunc("/ping", handler.PingHandler).Methods("GET")
 	router.HandleFunc(constants.GetMangasApiPath, handler.GetMangas(deps.MangaService)).Methods("GET")
 	router.HandleFunc(constants.GetChaptersApiPath, handler.GetChapters(deps.ChapterService)).Methods("GET")
+	router.HandleFunc(constants.GetContentsApiPath, handler.GetContents(deps.ContentService)).Methods("GET")
 	router.NotFoundHandler = http.HandlerFunc(handler.NotFoundHandler)
 
 	return router
