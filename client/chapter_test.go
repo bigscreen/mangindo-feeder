@@ -35,14 +35,15 @@ const titleId = "bleach"
 func (s *ChapterClientTestSuite) TestGetChapterList_ReturnsError_WhenCallTimesOut() {
 	ht := os.Getenv("HYSTRIX_TIMEOUT_MS")
 
-	os.Setenv("HYSTRIX_TIMEOUT_MS", "1")
+	_ = os.Setenv("HYSTRIX_TIMEOUT_MS", "1")
 	config.Load()
+	defer func() {
+		_ = os.Setenv("HYSTRIX_TIMEOUT_MS", ht)
+		config.Load()
+	}()
 
 	cc := NewChapterClient()
 	res, err := cc.GetChapterList(titleId)
-
-	os.Setenv("HYSTRIX_TIMEOUT_MS", ht)
-	config.Load()
 
 	assert.Contains(s.T(), strings.ToUpper(err.Error()), "TIMEOUT")
 	assert.Nil(s.T(), res)

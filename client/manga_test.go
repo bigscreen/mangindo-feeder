@@ -33,14 +33,15 @@ func TestMangaClientTestSuite(t *testing.T) {
 func (s *MangaClientTestSuite) TestGetMangaList_ReturnsError_WhenCallTimesOut() {
 	ht := os.Getenv("HYSTRIX_TIMEOUT_MS")
 
-	os.Setenv("HYSTRIX_TIMEOUT_MS", "1")
+	_ = os.Setenv("HYSTRIX_TIMEOUT_MS", "1")
 	config.Load()
+	defer func() {
+		_ = os.Setenv("HYSTRIX_TIMEOUT_MS", ht)
+		config.Load()
+	}()
 
 	mc := NewMangaClient()
 	res, err := mc.GetMangaList()
-
-	os.Setenv("HYSTRIX_TIMEOUT_MS", ht)
-	config.Load()
 
 	assert.Contains(s.T(), strings.ToUpper(err.Error()), "TIMEOUT")
 	assert.Nil(s.T(), res)

@@ -65,10 +65,10 @@ func (s *MangaServiceTestSuite) TestGetMangas_ReturnsOnlyPopularMangas_WhenManga
 	dm := getFakePopularManga()
 	res := &domain.MangaListResponse{Mangas: []domain.Manga{dm}}
 
-	os.Setenv("POPULAR_MANGA_TAGS", "one_piece")
+	_ = os.Setenv("POPULAR_MANGA_TAGS", "one_piece")
 	config.Load()
 	defer func() {
-		os.Setenv("POPULAR_MANGA_TAGS", tags)
+		_ = os.Setenv("POPULAR_MANGA_TAGS", tags)
 		config.Load()
 	}()
 
@@ -93,10 +93,10 @@ func (s *MangaServiceTestSuite) TestGetMangas_ReturnsOnlyLatestMangas_WhenMangaL
 	dm := getFakeLatestManga()
 	res := &domain.MangaListResponse{Mangas: []domain.Manga{dm}}
 
-	os.Setenv("POPULAR_MANGA_TAGS", "one_piece")
+	_ = os.Setenv("POPULAR_MANGA_TAGS", "one_piece")
 	config.Load()
 	defer func() {
-		os.Setenv("POPULAR_MANGA_TAGS", tags)
+		_ = os.Setenv("POPULAR_MANGA_TAGS", tags)
 		config.Load()
 	}()
 
@@ -122,10 +122,10 @@ func (s *MangaServiceTestSuite) TestGetMangas_ReturnsAllMangas() {
 	dlm := getFakeLatestManga()
 	res := &domain.MangaListResponse{Mangas: []domain.Manga{dpm, dlm}}
 
-	os.Setenv("POPULAR_MANGA_TAGS", "one_piece")
+	_ = os.Setenv("POPULAR_MANGA_TAGS", "one_piece")
 	config.Load()
 	defer func() {
-		os.Setenv("POPULAR_MANGA_TAGS", tags)
+		_ = os.Setenv("POPULAR_MANGA_TAGS", tags)
 		config.Load()
 	}()
 
