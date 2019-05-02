@@ -4,6 +4,7 @@ import (
 	"log"
 	"os"
 	"strconv"
+	"strings"
 
 	"github.com/spf13/viper"
 )
@@ -25,6 +26,12 @@ func fatalGetString(key string) string {
 		value = viper.GetString(key)
 	}
 	return value
+}
+
+func fatalGetStringArray(key, sep string) []string {
+	checkKey(key)
+	value := fatalGetString(key)
+	return strings.Split(value, sep)
 }
 
 func checkKey(key string) {

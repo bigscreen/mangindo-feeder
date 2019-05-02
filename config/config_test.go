@@ -15,6 +15,7 @@ func TestConfig(t *testing.T) {
 		"REDIS_PORT":           "6379",
 		"REDIS_POOL":           "10",
 		"WORKER_REDIS_ADDRESS": "127.0.0.1:6379",
+		"POPULAR_MANGA_TAGS":   "foo1, foo2",
 	}
 
 	for k, v := range configVars {
@@ -30,4 +31,5 @@ func TestConfig(t *testing.T) {
 	assert.Equal(t, 6379, RedisPort())
 	assert.Equal(t, 10, RedisPool())
 	assert.Equal(t, configVars["WORKER_REDIS_ADDRESS"], WorkerRedisAddress())
+	assert.Equal(t, []string{"foo1", "foo2"}, PopularMangaTags())
 }

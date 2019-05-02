@@ -2,6 +2,7 @@ package service
 
 import (
 	"github.com/bigscreen/mangindo-feeder/client"
+	"github.com/bigscreen/mangindo-feeder/config"
 	"github.com/bigscreen/mangindo-feeder/contract"
 	"github.com/bigscreen/mangindo-feeder/domain"
 	mErr "github.com/bigscreen/mangindo-feeder/error"
@@ -31,9 +32,7 @@ func getMappedManga(dm domain.Manga) contract.Manga {
 }
 
 func isPopularManga(titleId string) bool {
-	popularTags := [5]string{"one_piece", "nanatsu_no_taizai", "shokugeki_no_soma", "fairy_tail", "boruto"}
-
-	for _, tag := range popularTags {
+	for _, tag := range config.PopularMangaTags() {
 		if titleId == tag {
 			return true
 		}

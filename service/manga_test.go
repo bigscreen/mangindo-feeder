@@ -11,6 +11,7 @@ import (
 	"github.com/bigscreen/mangindo-feeder/logger"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
+	"os"
 	"testing"
 )
 
@@ -58,9 +59,18 @@ func (s *MangaServiceTestSuite) TestGetMangas_ReturnsError_WhenMangaListIsEmpty(
 }
 
 func (s *MangaServiceTestSuite) TestGetMangas_ReturnsOnlyPopularMangas_WhenMangaListContainsOnlyPopularMangas() {
+	tags := os.Getenv("POPULAR_MANGA_TAGS")
+
 	mc := client.MockMangaClient{}
 	dm := getFakePopularManga()
 	res := &domain.MangaListResponse{Mangas: []domain.Manga{dm}}
+
+	os.Setenv("POPULAR_MANGA_TAGS", "one_piece")
+	config.Load()
+	defer func() {
+		os.Setenv("POPULAR_MANGA_TAGS", tags)
+		config.Load()
+	}()
 
 	mc.On("GetMangaList").Return(res, nil)
 
@@ -77,9 +87,18 @@ func (s *MangaServiceTestSuite) TestGetMangas_ReturnsOnlyPopularMangas_WhenManga
 }
 
 func (s *MangaServiceTestSuite) TestGetMangas_ReturnsOnlyLatestMangas_WhenMangaListContainsOnlyLatestMangas() {
+	tags := os.Getenv("POPULAR_MANGA_TAGS")
+
 	mc := client.MockMangaClient{}
 	dm := getFakeLatestManga()
 	res := &domain.MangaListResponse{Mangas: []domain.Manga{dm}}
+
+	os.Setenv("POPULAR_MANGA_TAGS", "one_piece")
+	config.Load()
+	defer func() {
+		os.Setenv("POPULAR_MANGA_TAGS", tags)
+		config.Load()
+	}()
 
 	mc.On("GetMangaList").Return(res, nil)
 
@@ -96,10 +115,19 @@ func (s *MangaServiceTestSuite) TestGetMangas_ReturnsOnlyLatestMangas_WhenMangaL
 }
 
 func (s *MangaServiceTestSuite) TestGetMangas_ReturnsAllMangas() {
+	tags := os.Getenv("POPULAR_MANGA_TAGS")
+
 	mc := client.MockMangaClient{}
 	dpm := getFakePopularManga()
 	dlm := getFakeLatestManga()
 	res := &domain.MangaListResponse{Mangas: []domain.Manga{dpm, dlm}}
+
+	os.Setenv("POPULAR_MANGA_TAGS", "one_piece")
+	config.Load()
+	defer func() {
+		os.Setenv("POPULAR_MANGA_TAGS", tags)
+		config.Load()
+	}()
 
 	mc.On("GetMangaList").Return(res, nil)
 
