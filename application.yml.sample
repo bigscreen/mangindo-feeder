@@ -17,4 +17,4 @@ HYSTRIX_MAX_CONCURRENT_REQUESTS: 100
 HYSTRIX_SLEEP_WINDOW_MS: 100
 HYSTRIX_ERROR_THRESHOLD: 1000
 
-POPULAR_MANGA_TAGS: "one_piece, nanatsu_no_taizai, shokugeki_no_soma, fairy_tail, boruto"
+POPULAR_MANGA_TAGS: "one_piece, nanatsu_no_taizai, shokugeki_no_soma, fairy_tail, boruto, onepunch_man"
