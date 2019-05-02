@@ -15,6 +15,7 @@ type Config struct {
 	workerRedisAddress string
 	baseUrl            string
 	popularMangaTags   []string
+	adsContentTags     []string
 	hystrixConfig      heimdall.HystrixCommandConfig
 }
 
@@ -43,6 +44,7 @@ func Load() {
 		workerRedisAddress: fatalGetString("WORKER_REDIS_ADDRESS"),
 		baseUrl:            fatalGetString("ORIGIN_SERVER_BASE_URL"),
 		popularMangaTags:   fatalGetStringArray("POPULAR_MANGA_TAGS", ", "),
+		adsContentTags:     fatalGetStringArray("ADS_CONTENT_TAGS", ", "),
 		hystrixConfig: heimdall.HystrixCommandConfig{
 			Timeout:               getIntOrPanic("HYSTRIX_TIMEOUT_MS"),
 			MaxConcurrentRequests: getIntOrPanic("HYSTRIX_MAX_CONCURRENT_REQUESTS"),
@@ -86,6 +88,10 @@ func BaseURL() string {
 
 func PopularMangaTags() []string {
 	return appConfig.popularMangaTags
+}
+
+func AdsContentTags() []string {
+	return appConfig.adsContentTags
 }
 
 func HystrixConfig() heimdall.HystrixCommandConfig {

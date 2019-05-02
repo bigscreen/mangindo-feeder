@@ -2,6 +2,7 @@ package service
 
 import (
 	"github.com/bigscreen/mangindo-feeder/client"
+	"github.com/bigscreen/mangindo-feeder/config"
 	"github.com/bigscreen/mangindo-feeder/contract"
 	mErr "github.com/bigscreen/mangindo-feeder/error"
 	"strings"
@@ -19,6 +20,15 @@ func getEncodedUrl(url string) string {
 	return strings.Replace(url, " ", "%20", -1)
 }
 
+func isAdsContentUrl(url string) bool {
+	for _, tag := range config.AdsContentTags() {
+		if strings.Contains(url, tag) {
+			return true
+		}
+	}
+	return false
+}
+
 func (s *contentService) GetContents(req contract.ContentRequest) (*[]contract.Content, error) {
 	cl, err := s.cClient.GetContentList(req.TitleId, req.Chapter)
 	if err != nil {
@@ -31,8 +41,14 @@ func (s *contentService) GetContents(req contract.ContentRequest) (*[]contract.C
 
 	var contents []contract.Content
 	for _, dc := range cl.Contents {
-		content := contract.Content{ImageURL: getEncodedUrl(dc.ImageURL)}
-		contents = append(contents, content)
+		if !isAdsContentUrl(dc.ImageURL) {
+			content := contract.Content{ImageURL: getEncodedUrl(dc.ImageURL)}
+			contents = append(contents, content)
+		}
+	}
+
+	if contents == nil {
+		return nil, mErr.NewNotFoundError("content")
 	}
 
 	return &contents, nil
