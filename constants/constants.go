@@ -10,8 +10,8 @@ const (
 	GetChapterListCommand = "GetChapterListCommand"
 	GetContentListCommand = "GetContentListCommand"
 
-	GetMangasApiPath = "/mangindo/v1/mangas"
-	GetChaptersApiPath = "/mangindo/v1/chapters"
+	GetMangasApiPath   = "/mangindo/v1/mangas"
+	GetChaptersApiPath = "/mangindo/v1/mangas/{title_id}/chapters"
 	GetContentsApiPath = "/mangindo/v1/contents"
 
 	TitleIdKeyParam = "title_id"
