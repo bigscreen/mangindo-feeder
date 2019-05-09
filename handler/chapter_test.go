@@ -22,6 +22,22 @@ import (
 
 type ChapterHandlerTestSuite struct {
 	suite.Suite
+	mr *mux.Router
+}
+
+func TestChapterHandlerTestSuite(t *testing.T) {
+	suite.Run(t, new(ChapterHandlerTestSuite))
+}
+
+func buildRequest(titleId string) (*http.Request, *httptest.ResponseRecorder) {
+	req, _ := http.NewRequest("GET", buildChapterPath(titleId), nil)
+	rr := httptest.NewRecorder()
+	return req, rr
+}
+
+func buildChapterPath(titleId string) string {
+	pVar := fmt.Sprintf("{%s}", constants.TitleIdKeyParam)
+	return strings.Replace(constants.GetChaptersApiPath, pVar, titleId, -1)
 }
 
 func (s *ChapterHandlerTestSuite) SetupSuite() {
@@ -30,24 +46,17 @@ func (s *ChapterHandlerTestSuite) SetupSuite() {
 	logger.SetupLogger()
 }
 
-func TestChapterHandlerTestSuite(t *testing.T) {
-	suite.Run(t, new(ChapterHandlerTestSuite))
-}
-
-func buildChapterPath(titleId string) string {
-	pVar := fmt.Sprintf("{%s}", constants.TitleIdKeyParam)
-	return strings.Replace(constants.GetChaptersApiPath, pVar, titleId, -1)
+func (s *ChapterHandlerTestSuite) SetupTest() {
+	s.mr = mux.NewRouter()
 }
 
 func (s *ChapterHandlerTestSuite) TestGetChapters_ReturnsError_WhenQueryParamIsBlank() {
 	cs := service.MockChapterService{}
 
-	req, _ := http.NewRequest("GET", buildChapterPath(" "), nil)
-	rr := httptest.NewRecorder()
+	req, rr := buildRequest(" ")
 
-	mr := mux.NewRouter()
-	mr.HandleFunc(constants.GetChaptersApiPath, GetChapters(cs))
-	mr.ServeHTTP(rr, req)
+	s.mr.HandleFunc(constants.GetChaptersApiPath, GetChapters(cs))
+	s.mr.ServeHTTP(rr, req)
 
 	body := string(rr.Body.Bytes())
 
@@ -61,12 +70,10 @@ func (s *ChapterHandlerTestSuite) TestGetChapters_ReturnsError_WhenUnknownErrorH
 	cs := service.MockChapterService{}
 	cs.On("GetChapters", contract.NewChapterRequest("foo")).Return(nil, err)
 
-	req, _ := http.NewRequest("GET", buildChapterPath("foo"), nil)
-	rr := httptest.NewRecorder()
+	req, rr := buildRequest("foo")
 
-	mr := mux.NewRouter()
-	mr.HandleFunc(constants.GetChaptersApiPath, GetChapters(cs))
-	mr.ServeHTTP(rr, req)
+	s.mr.HandleFunc(constants.GetChaptersApiPath, GetChapters(cs))
+	s.mr.ServeHTTP(rr, req)
 
 	res, _ := json.Marshal(getErrorResponse(err))
 	body := strings.TrimSuffix(string(rr.Body.Bytes()), "\n")
@@ -81,12 +88,10 @@ func (s *ChapterHandlerTestSuite) TestGetChapters_ReturnsError_WhenChaptersDoNot
 	cs := service.MockChapterService{}
 	cs.On("GetChapters", contract.NewChapterRequest("foo")).Return(nil, err)
 
-	req, _ := http.NewRequest("GET", buildChapterPath("foo"), nil)
-	rr := httptest.NewRecorder()
+	req, rr := buildRequest("foo")
 
-	mr := mux.NewRouter()
-	mr.HandleFunc(constants.GetChaptersApiPath, GetChapters(cs))
-	mr.ServeHTTP(rr, req)
+	s.mr.HandleFunc(constants.GetChaptersApiPath, GetChapters(cs))
+	s.mr.ServeHTTP(rr, req)
 
 	res, _ := json.Marshal(getErrorResponse(err))
 	body := strings.TrimSuffix(string(rr.Body.Bytes()), "\n")
@@ -106,12 +111,10 @@ func (s *ChapterHandlerTestSuite) TestGetChapters_ReturnsSuccess_WhenChaptersExi
 	cs := service.MockChapterService{}
 	cs.On("GetChapters", contract.NewChapterRequest("foo")).Return(&ccs, nil)
 
-	req, _ := http.NewRequest("GET", buildChapterPath("foo"), nil)
-	rr := httptest.NewRecorder()
+	req, rr := buildRequest("foo")
 
-	mr := mux.NewRouter()
-	mr.HandleFunc(constants.GetChaptersApiPath, GetChapters(cs))
-	mr.ServeHTTP(rr, req)
+	s.mr.HandleFunc(constants.GetChaptersApiPath, GetChapters(cs))
+	s.mr.ServeHTTP(rr, req)
 
 	cr := contract.ChapterResponse{
 		Success:  true,
