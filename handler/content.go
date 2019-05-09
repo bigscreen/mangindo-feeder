@@ -6,13 +6,15 @@ import (
 	mErr "github.com/bigscreen/mangindo-feeder/error"
 	"github.com/bigscreen/mangindo-feeder/service"
 	"github.com/bigscreen/mangindo-feeder/validator"
+	"github.com/gorilla/mux"
 	"net/http"
 )
 
 func GetContents(s service.ContentService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		titleId := r.URL.Query().Get(constants.TitleIdKeyParam)
-		chapter := r.URL.Query().Get(constants.ChapterKeyParam)
+		vars := mux.Vars(r)
+		titleId := vars[constants.TitleIdKeyParam]
+		chapter := vars[constants.ChapterKeyParam]
 
 		validators := []validator.Validator{
 			validator.PresenceValidator{Field: constants.TitleIdKeyParam, Value: &titleId},

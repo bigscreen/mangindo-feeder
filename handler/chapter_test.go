@@ -29,7 +29,7 @@ func TestChapterHandlerTestSuite(t *testing.T) {
 	suite.Run(t, new(ChapterHandlerTestSuite))
 }
 
-func buildRequest(titleId string) (*http.Request, *httptest.ResponseRecorder) {
+func buildChapterRequest(titleId string) (*http.Request, *httptest.ResponseRecorder) {
 	req, _ := http.NewRequest("GET", buildChapterPath(titleId), nil)
 	rr := httptest.NewRecorder()
 	return req, rr
@@ -53,7 +53,7 @@ func (s *ChapterHandlerTestSuite) SetupTest() {
 func (s *ChapterHandlerTestSuite) TestGetChapters_ReturnsError_WhenQueryParamIsBlank() {
 	cs := service.MockChapterService{}
 
-	req, rr := buildRequest(" ")
+	req, rr := buildChapterRequest(" ")
 
 	s.mr.HandleFunc(constants.GetChaptersApiPath, GetChapters(cs))
 	s.mr.ServeHTTP(rr, req)
@@ -70,7 +70,7 @@ func (s *ChapterHandlerTestSuite) TestGetChapters_ReturnsError_WhenUnknownErrorH
 	cs := service.MockChapterService{}
 	cs.On("GetChapters", contract.NewChapterRequest("foo")).Return(nil, err)
 
-	req, rr := buildRequest("foo")
+	req, rr := buildChapterRequest("foo")
 
 	s.mr.HandleFunc(constants.GetChaptersApiPath, GetChapters(cs))
 	s.mr.ServeHTTP(rr, req)
@@ -88,7 +88,7 @@ func (s *ChapterHandlerTestSuite) TestGetChapters_ReturnsError_WhenChaptersDoNot
 	cs := service.MockChapterService{}
 	cs.On("GetChapters", contract.NewChapterRequest("foo")).Return(nil, err)
 
-	req, rr := buildRequest("foo")
+	req, rr := buildChapterRequest("foo")
 
 	s.mr.HandleFunc(constants.GetChaptersApiPath, GetChapters(cs))
 	s.mr.ServeHTTP(rr, req)
@@ -111,7 +111,7 @@ func (s *ChapterHandlerTestSuite) TestGetChapters_ReturnsSuccess_WhenChaptersExi
 	cs := service.MockChapterService{}
 	cs.On("GetChapters", contract.NewChapterRequest("foo")).Return(&ccs, nil)
 
-	req, rr := buildRequest("foo")
+	req, rr := buildChapterRequest("foo")
 
 	s.mr.HandleFunc(constants.GetChaptersApiPath, GetChapters(cs))
 	s.mr.ServeHTTP(rr, req)

@@ -12,7 +12,7 @@ const (
 
 	GetMangasApiPath   = "/mangindo/v1/mangas"
 	GetChaptersApiPath = "/mangindo/v1/mangas/{title_id}/chapters"
-	GetContentsApiPath = "/mangindo/v1/contents"
+	GetContentsApiPath = "/mangindo/v1/mangas/{title_id}/chapters/{chapter}/contents"
 
 	TitleIdKeyParam = "title_id"
 	ChapterKeyParam = "chapter"

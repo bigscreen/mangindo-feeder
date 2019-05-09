@@ -10,6 +10,7 @@ import (
 	mErr "github.com/bigscreen/mangindo-feeder/error"
 	"github.com/bigscreen/mangindo-feeder/logger"
 	"github.com/bigscreen/mangindo-feeder/service"
+	"github.com/gorilla/mux"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/suite"
@@ -21,6 +22,24 @@ import (
 
 type ContentHandlerTestSuite struct {
 	suite.Suite
+	mr *mux.Router
+}
+
+func TestContentHandlerTestSuite(t *testing.T) {
+	suite.Run(t, new(ContentHandlerTestSuite))
+}
+
+func buildContentRequest(titleId, chapter string) (*http.Request, *httptest.ResponseRecorder) {
+	req, _ := http.NewRequest("GET", buildContentPath(titleId, chapter), nil)
+	rr := httptest.NewRecorder()
+	return req, rr
+}
+
+func buildContentPath(titleId, chapter string) string {
+	tVar := fmt.Sprintf("{%s}", constants.TitleIdKeyParam)
+	cVar := fmt.Sprintf("{%s}", constants.ChapterKeyParam)
+	replacer := strings.NewReplacer(tVar, titleId, cVar, chapter,)
+	return replacer.Replace(constants.GetContentsApiPath)
 }
 
 func (s *ContentHandlerTestSuite) SetupSuite() {
@@ -29,24 +48,17 @@ func (s *ContentHandlerTestSuite) SetupSuite() {
 	logger.SetupLogger()
 }
 
-func TestContentHandlerTestSuite(t *testing.T) {
-	suite.Run(t, new(ContentHandlerTestSuite))
+func (s *ContentHandlerTestSuite) SetupTest() {
+	s.mr = mux.NewRouter()
 }
 
-func buildContentParam(titleId, chapter string) string {
-	param := fmt.Sprintf("?title_id=%s&chapter=%s", titleId, chapter)
-	return constants.GetContentsApiPath + param
-}
-
-func (s *ContentHandlerTestSuite) TestGetContents_ReturnsError_WhenParamsAreEmpty() {
-	req, _ := http.NewRequest("GET", buildContentParam("", ""), nil)
-
-	rr := httptest.NewRecorder()
-
+func (s *ContentHandlerTestSuite) TestGetContents_ReturnsError_WhenParamsAreBlank() {
 	cs := service.MockContentService{}
 
-	h := GetContents(cs)
-	h.ServeHTTP(rr, req)
+	req, rr := buildContentRequest(" ", " ")
+
+	s.mr.HandleFunc(constants.GetContentsApiPath, GetContents(cs))
+	s.mr.ServeHTTP(rr, req)
 
 	body := string(rr.Body.Bytes())
 
@@ -57,14 +69,12 @@ func (s *ContentHandlerTestSuite) TestGetContents_ReturnsError_WhenParamsAreEmpt
 }
 
 func (s *ContentHandlerTestSuite) TestGetContents_ReturnsError_WhenInvalidChapterIsBeingSent() {
-	req, _ := http.NewRequest("GET", buildContentParam("foo", "abc"), nil)
-
-	rr := httptest.NewRecorder()
-
 	cs := service.MockContentService{}
 
-	h := GetContents(cs)
-	h.ServeHTTP(rr, req)
+	req, rr := buildContentRequest("foo", "abc")
+
+	s.mr.HandleFunc(constants.GetContentsApiPath, GetContents(cs))
+	s.mr.ServeHTTP(rr, req)
 
 	body := string(rr.Body.Bytes())
 
@@ -74,16 +84,14 @@ func (s *ContentHandlerTestSuite) TestGetContents_ReturnsError_WhenInvalidChapte
 }
 
 func (s *ContentHandlerTestSuite) TestGetContents_ReturnsError_WhenUnknownErrorHappens() {
-	req, _ := http.NewRequest("GET", buildContentParam("foo", "123"), nil)
-
-	rr := httptest.NewRecorder()
 	err := mErr.NewGenericError()
-
 	cs := service.MockContentService{}
 	cs.On("GetContents", contract.NewContentRequest("foo", "123")).Return(nil, err)
 
-	h := GetContents(cs)
-	h.ServeHTTP(rr, req)
+	req, rr := buildContentRequest("foo", "123")
+
+	s.mr.HandleFunc(constants.GetContentsApiPath, GetContents(cs))
+	s.mr.ServeHTTP(rr, req)
 
 	res, _ := json.Marshal(getErrorResponse(err))
 	body := strings.TrimSuffix(string(rr.Body.Bytes()), "\n")
@@ -94,16 +102,14 @@ func (s *ContentHandlerTestSuite) TestGetContents_ReturnsError_WhenUnknownErrorH
 }
 
 func (s *ContentHandlerTestSuite) TestGetContents_ReturnsError_WhenContentsDoNotExist() {
-	req, _ := http.NewRequest("GET", buildContentParam("foo", "123"), nil)
-
-	rr := httptest.NewRecorder()
 	err := mErr.NewNotFoundError("chapter")
-
 	cs := service.MockContentService{}
 	cs.On("GetContents", contract.NewContentRequest("foo", "123")).Return(nil, err)
 
-	h := GetContents(cs)
-	h.ServeHTTP(rr, req)
+	req, rr := buildContentRequest("foo", "123")
+
+	s.mr.HandleFunc(constants.GetContentsApiPath, GetContents(cs))
+	s.mr.ServeHTTP(rr, req)
 
 	res, _ := json.Marshal(getErrorResponse(err))
 	body := strings.TrimSuffix(string(rr.Body.Bytes()), "\n")
@@ -114,9 +120,6 @@ func (s *ContentHandlerTestSuite) TestGetContents_ReturnsError_WhenContentsDoNot
 }
 
 func (s *ContentHandlerTestSuite) TestGetContents_ReturnsSuccess_WhenContentsExist() {
-	req, _ := http.NewRequest("GET", buildContentParam("foo", "123"), nil)
-
-	rr := httptest.NewRecorder()
 	cc := contract.Content{
 		ImageURL:  "http://foo.com/foo.jpg",
 	}
@@ -125,12 +128,13 @@ func (s *ContentHandlerTestSuite) TestGetContents_ReturnsSuccess_WhenContentsExi
 		Success:  true,
 		Contents: ccs,
 	}
-
 	cs := service.MockContentService{}
 	cs.On("GetContents", contract.NewContentRequest("foo", "123")).Return(&ccs, nil)
 
-	h := GetContents(cs)
-	h.ServeHTTP(rr, req)
+	req, rr := buildContentRequest("foo", "123")
+
+	s.mr.HandleFunc(constants.GetContentsApiPath, GetContents(cs))
+	s.mr.ServeHTTP(rr, req)
 
 	res, _ := json.Marshal(cr)
 	body := strings.TrimSuffix(string(rr.Body.Bytes()), "\n")
