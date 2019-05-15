@@ -10,7 +10,7 @@ APP_EXECUTABLE="./out/$(APP)"
 setup:
 	go get -u github.com/golang/dep/cmd/dep
 	go get -u github.com/golang/lint/golint
-	go get -u github.com/axw/gocov/gocov
+	go get -u github.com/mattn/goveralls
 
 build-deps:
 	dep ensure
@@ -42,14 +42,10 @@ lint:
 test:
 	ENVIRONMENT=test go test $(UNIT_TEST_PACKAGES) -p=1
 
-test-ci: copy-config build-deps compile fmt test-cov test-cov-report
-
-test-cov:
-	gocov test ${ALL_PACKAGES} > coverage.json
-
-test-cov-report:
-	@echo "\nGENERATING TEST REPORT."
-	gocov report coverage.json
+test-ci:
+	copy-config build-deps compile fmt
+	go test $(UNIT_TEST_PACKAGES) -p=1 -covermode=count -coverprofile=profile.cov
+	goveralls -coverprofile=profile.cov -service=travis-ci
 
 copy-config:
 	cp application.yml.sample application.yml
