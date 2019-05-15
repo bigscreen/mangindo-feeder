@@ -38,7 +38,7 @@ func buildContentRequest(titleId, chapter string) (*http.Request, *httptest.Resp
 func buildContentPath(titleId, chapter string) string {
 	tVar := fmt.Sprintf("{%s}", constants.TitleIdKeyParam)
 	cVar := fmt.Sprintf("{%s}", constants.ChapterKeyParam)
-	replacer := strings.NewReplacer(tVar, titleId, cVar, chapter,)
+	replacer := strings.NewReplacer(tVar, titleId, cVar, chapter)
 	return replacer.Replace(constants.GetContentsApiPath)
 }
 
@@ -121,7 +121,7 @@ func (s *ContentHandlerTestSuite) TestGetContents_ReturnsError_WhenContentsDoNot
 
 func (s *ContentHandlerTestSuite) TestGetContents_ReturnsSuccess_WhenContentsExist() {
 	cc := contract.Content{
-		ImageURL:  "http://foo.com/foo.jpg",
+		ImageURL: "http://foo.com/foo.jpg",
 	}
 	ccs := []contract.Content{cc}
 	cr := contract.ContentResponse{

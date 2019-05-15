@@ -45,7 +45,7 @@ func (s *MangaServiceTestSuite) TestGetMangas_ReturnsError_WhenClientReturnsErro
 
 func (s *MangaServiceTestSuite) TestGetMangas_ReturnsError_WhenMangaListIsEmpty() {
 	mc := client.MockMangaClient{}
-	res := &domain.MangaListResponse{Mangas: []domain.Manga{},}
+	res := &domain.MangaListResponse{Mangas: []domain.Manga{}}
 
 	mc.On("GetMangaList").Return(res, nil)
 

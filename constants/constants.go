@@ -6,7 +6,7 @@ const (
 	ServerError              = "origin server error:"
 	InvalidJSONResponseError = "invalid JSON response from origin server"
 
-	GetMangaListCommand = "GetMangaListCommand"
+	GetMangaListCommand   = "GetMangaListCommand"
 	GetChapterListCommand = "GetChapterListCommand"
 	GetContentListCommand = "GetContentListCommand"
 

@@ -45,7 +45,7 @@ func (s *ChapterServiceTestSuite) TestGetChapters_ReturnsError_WhenClientReturns
 func (s *ChapterServiceTestSuite) TestGetChapters_ReturnsError_WhenChapterListIsEmpty() {
 	cc := client.MockChapterClient{}
 	req := contract.NewChapterRequest("bleach")
-	res := &domain.ChapterListResponse{Chapters: []domain.Chapter{},}
+	res := &domain.ChapterListResponse{Chapters: []domain.Chapter{}}
 
 	cc.On("GetChapterList", req.TitleId).Return(res, nil)
 
@@ -66,7 +66,7 @@ func (s *ChapterServiceTestSuite) TestGetChapters_ReturnsSuccess_WhenChapterList
 		TitleId:      "bleach",
 		ModifiedDate: "2016-08-18 18:59:58",
 	}
-	res := &domain.ChapterListResponse{Chapters: []domain.Chapter{dc},}
+	res := &domain.ChapterListResponse{Chapters: []domain.Chapter{dc}}
 
 	cc.On("GetChapterList", req.TitleId).Return(res, nil)
 

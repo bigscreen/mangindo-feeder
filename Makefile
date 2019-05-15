@@ -42,8 +42,7 @@ lint:
 test:
 	ENVIRONMENT=test go test $(UNIT_TEST_PACKAGES) -p=1
 
-test-ci:
-	copy-config build-deps compile fmt
+test-ci: copy-config build-deps compile fmt
 	go test $(UNIT_TEST_PACKAGES) -p=1 -covermode=count -coverprofile=profile.cov
 	goveralls -coverprofile=profile.cov -service=travis-ci
 
