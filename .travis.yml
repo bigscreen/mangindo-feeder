@@ -11,9 +11,7 @@ git:
 install: true
 
 before_script:
-  - go get -u github.com/golang/dep/cmd/dep
-  - go get -u github.com/golang/lint/golint
-  - go get -u github.com/mattn/goveralls
+  - make setup
 
 script:
   - make test-ci
