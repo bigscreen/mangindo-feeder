@@ -9,7 +9,7 @@ import (
 	"github.com/bigscreen/mangindo-feeder/contract"
 	mErr "github.com/bigscreen/mangindo-feeder/error"
 	"github.com/bigscreen/mangindo-feeder/logger"
-	"github.com/bigscreen/mangindo-feeder/service"
+	mMock "github.com/bigscreen/mangindo-feeder/mock"
 	"github.com/gorilla/mux"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
@@ -53,7 +53,7 @@ func (s *ContentHandlerTestSuite) SetupTest() {
 }
 
 func (s *ContentHandlerTestSuite) TestGetContents_ReturnsError_WhenParamsAreBlank() {
-	cs := service.MockContentService{}
+	cs := mMock.MockContentService{}
 
 	req, rr := buildContentRequest(" ", " ")
 
@@ -69,7 +69,7 @@ func (s *ContentHandlerTestSuite) TestGetContents_ReturnsError_WhenParamsAreBlan
 }
 
 func (s *ContentHandlerTestSuite) TestGetContents_ReturnsError_WhenInvalidChapterIsBeingSent() {
-	cs := service.MockContentService{}
+	cs := mMock.MockContentService{}
 
 	req, rr := buildContentRequest("foo", "abc")
 
@@ -85,7 +85,7 @@ func (s *ContentHandlerTestSuite) TestGetContents_ReturnsError_WhenInvalidChapte
 
 func (s *ContentHandlerTestSuite) TestGetContents_ReturnsError_WhenUnknownErrorHappens() {
 	err := mErr.NewGenericError()
-	cs := service.MockContentService{}
+	cs := mMock.MockContentService{}
 	cs.On("GetContents", contract.NewContentRequest("foo", "123")).Return(nil, err)
 
 	req, rr := buildContentRequest("foo", "123")
@@ -103,7 +103,7 @@ func (s *ContentHandlerTestSuite) TestGetContents_ReturnsError_WhenUnknownErrorH
 
 func (s *ContentHandlerTestSuite) TestGetContents_ReturnsError_WhenContentsDoNotExist() {
 	err := mErr.NewNotFoundError("chapter")
-	cs := service.MockContentService{}
+	cs := mMock.MockContentService{}
 	cs.On("GetContents", contract.NewContentRequest("foo", "123")).Return(nil, err)
 
 	req, rr := buildContentRequest("foo", "123")
@@ -128,7 +128,7 @@ func (s *ContentHandlerTestSuite) TestGetContents_ReturnsSuccess_WhenContentsExi
 		Success:  true,
 		Contents: ccs,
 	}
-	cs := service.MockContentService{}
+	cs := mMock.MockContentService{}
 	cs.On("GetContents", contract.NewContentRequest("foo", "123")).Return(&ccs, nil)
 
 	req, rr := buildContentRequest("foo", "123")

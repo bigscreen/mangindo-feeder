@@ -1,4 +1,4 @@
-package client
+package mock
 
 import (
 	"github.com/bigscreen/mangindo-feeder/domain"

@@ -9,7 +9,7 @@ import (
 	"github.com/bigscreen/mangindo-feeder/contract"
 	mErr "github.com/bigscreen/mangindo-feeder/error"
 	"github.com/bigscreen/mangindo-feeder/logger"
-	"github.com/bigscreen/mangindo-feeder/service"
+	mMock "github.com/bigscreen/mangindo-feeder/mock"
 	"github.com/gorilla/mux"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
@@ -51,7 +51,7 @@ func (s *ChapterHandlerTestSuite) SetupTest() {
 }
 
 func (s *ChapterHandlerTestSuite) TestGetChapters_ReturnsError_WhenQueryParamIsBlank() {
-	cs := service.MockChapterService{}
+	cs := mMock.MockChapterService{}
 
 	req, rr := buildChapterRequest(" ")
 
@@ -67,7 +67,7 @@ func (s *ChapterHandlerTestSuite) TestGetChapters_ReturnsError_WhenQueryParamIsB
 
 func (s *ChapterHandlerTestSuite) TestGetChapters_ReturnsError_WhenUnknownErrorHappens() {
 	err := mErr.NewGenericError()
-	cs := service.MockChapterService{}
+	cs := mMock.MockChapterService{}
 	cs.On("GetChapters", contract.NewChapterRequest("foo")).Return(nil, err)
 
 	req, rr := buildChapterRequest("foo")
@@ -85,7 +85,7 @@ func (s *ChapterHandlerTestSuite) TestGetChapters_ReturnsError_WhenUnknownErrorH
 
 func (s *ChapterHandlerTestSuite) TestGetChapters_ReturnsError_WhenChaptersDoNotExist() {
 	err := mErr.NewNotFoundError("chapter")
-	cs := service.MockChapterService{}
+	cs := mMock.MockChapterService{}
 	cs.On("GetChapters", contract.NewChapterRequest("foo")).Return(nil, err)
 
 	req, rr := buildChapterRequest("foo")
@@ -108,7 +108,7 @@ func (s *ChapterHandlerTestSuite) TestGetChapters_ReturnsSuccess_WhenChaptersExi
 		TitleId: "foo",
 	}
 	ccs := []contract.Chapter{cc}
-	cs := service.MockChapterService{}
+	cs := mMock.MockChapterService{}
 	cs.On("GetChapters", contract.NewChapterRequest("foo")).Return(&ccs, nil)
 
 	req, rr := buildChapterRequest("foo")

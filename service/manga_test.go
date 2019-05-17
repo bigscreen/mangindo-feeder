@@ -3,12 +3,12 @@ package service
 import (
 	"errors"
 	"github.com/bigscreen/mangindo-feeder/appcontext"
-	"github.com/bigscreen/mangindo-feeder/client"
 	"github.com/bigscreen/mangindo-feeder/config"
 	"github.com/bigscreen/mangindo-feeder/contract"
 	"github.com/bigscreen/mangindo-feeder/domain"
 	mErr "github.com/bigscreen/mangindo-feeder/error"
 	"github.com/bigscreen/mangindo-feeder/logger"
+	"github.com/bigscreen/mangindo-feeder/mock"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
 	"os"
@@ -30,7 +30,7 @@ func TestMangaServiceTestSuite(t *testing.T) {
 }
 
 func (s *MangaServiceTestSuite) TestGetMangas_ReturnsError_WhenClientReturnsError() {
-	mc := client.MockMangaClient{}
+	mc := mock.MockMangaClient{}
 
 	mc.On("GetMangaList").Return(nil, errors.New("some error"))
 
@@ -44,7 +44,7 @@ func (s *MangaServiceTestSuite) TestGetMangas_ReturnsError_WhenClientReturnsErro
 }
 
 func (s *MangaServiceTestSuite) TestGetMangas_ReturnsError_WhenMangaListIsEmpty() {
-	mc := client.MockMangaClient{}
+	mc := mock.MockMangaClient{}
 	res := &domain.MangaListResponse{Mangas: []domain.Manga{}}
 
 	mc.On("GetMangaList").Return(res, nil)
@@ -61,7 +61,7 @@ func (s *MangaServiceTestSuite) TestGetMangas_ReturnsError_WhenMangaListIsEmpty(
 func (s *MangaServiceTestSuite) TestGetMangas_ReturnsOnlyPopularMangas_WhenMangaListContainsOnlyPopularMangas() {
 	tags := os.Getenv("POPULAR_MANGA_TAGS")
 
-	mc := client.MockMangaClient{}
+	mc := mock.MockMangaClient{}
 	dm := getFakePopularManga()
 	res := &domain.MangaListResponse{Mangas: []domain.Manga{dm}}
 
@@ -89,7 +89,7 @@ func (s *MangaServiceTestSuite) TestGetMangas_ReturnsOnlyPopularMangas_WhenManga
 func (s *MangaServiceTestSuite) TestGetMangas_ReturnsOnlyLatestMangas_WhenMangaListContainsOnlyLatestMangas() {
 	tags := os.Getenv("POPULAR_MANGA_TAGS")
 
-	mc := client.MockMangaClient{}
+	mc := mock.MockMangaClient{}
 	dm := getFakeLatestManga()
 	res := &domain.MangaListResponse{Mangas: []domain.Manga{dm}}
 
@@ -117,7 +117,7 @@ func (s *MangaServiceTestSuite) TestGetMangas_ReturnsOnlyLatestMangas_WhenMangaL
 func (s *MangaServiceTestSuite) TestGetMangas_ReturnsAllMangas() {
 	tags := os.Getenv("POPULAR_MANGA_TAGS")
 
-	mc := client.MockMangaClient{}
+	mc := mock.MockMangaClient{}
 	dpm := getFakePopularManga()
 	dlm := getFakeLatestManga()
 	res := &domain.MangaListResponse{Mangas: []domain.Manga{dpm, dlm}}

@@ -1,4 +1,4 @@
-package service
+package mock
 
 import (
 	"github.com/bigscreen/mangindo-feeder/contract"

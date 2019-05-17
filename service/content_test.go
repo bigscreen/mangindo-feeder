@@ -4,12 +4,12 @@ import (
 	"errors"
 	"fmt"
 	"github.com/bigscreen/mangindo-feeder/appcontext"
-	"github.com/bigscreen/mangindo-feeder/client"
 	"github.com/bigscreen/mangindo-feeder/config"
 	"github.com/bigscreen/mangindo-feeder/contract"
 	"github.com/bigscreen/mangindo-feeder/domain"
 	mErr "github.com/bigscreen/mangindo-feeder/error"
 	"github.com/bigscreen/mangindo-feeder/logger"
+	"github.com/bigscreen/mangindo-feeder/mock"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
 	"os"
@@ -31,7 +31,7 @@ func TestContentServiceTestSuite(t *testing.T) {
 }
 
 func (s *ContentServiceTestSuite) TestGetContents_ReturnsError_WhenClientReturnsError() {
-	cc := client.MockContentClient{}
+	cc := mock.MockContentClient{}
 	req := contract.NewContentRequest("bleach", "650")
 
 	cc.On("GetContentList", req.TitleId, req.Chapter).Return(nil, errors.New("some error"))
@@ -45,7 +45,7 @@ func (s *ContentServiceTestSuite) TestGetContents_ReturnsError_WhenClientReturns
 }
 
 func (s *ContentServiceTestSuite) TestGetContents_ReturnsError_WhenContentListIsEmpty() {
-	cc := client.MockContentClient{}
+	cc := mock.MockContentClient{}
 	req := contract.NewContentRequest("bleach", "650")
 	res := &domain.ContentListResponse{
 		Contents: []domain.Content{},
@@ -64,7 +64,7 @@ func (s *ContentServiceTestSuite) TestGetContents_ReturnsError_WhenContentListIs
 func (s *ContentServiceTestSuite) TestGetContents_ReturnsError_WhenContentListContainsOnlyAdsContent() {
 	tags := os.Getenv("ADS_CONTENT_TAGS")
 
-	cc := client.MockContentClient{}
+	cc := mock.MockContentClient{}
 	req := contract.NewContentRequest("bleach", "650")
 	res := &domain.ContentListResponse{
 		Contents: []domain.Content{getFakeAdsContent(1, "ads")},
@@ -90,7 +90,7 @@ func (s *ContentServiceTestSuite) TestGetContents_ReturnsError_WhenContentListCo
 func (s *ContentServiceTestSuite) TestGetContents_ReturnsSuccess_WhenContentListContainsOnlyNonAdsContent() {
 	tags := os.Getenv("ADS_CONTENT_TAGS")
 
-	cc := client.MockContentClient{}
+	cc := mock.MockContentClient{}
 	req := contract.NewContentRequest("bleach", "650")
 	ct := getFakeContent(1)
 	res := &domain.ContentListResponse{
@@ -118,7 +118,7 @@ func (s *ContentServiceTestSuite) TestGetContents_ReturnsSuccess_WhenContentList
 func (s *ContentServiceTestSuite) TestGetContents_ReturnsSuccess_WhenContentListContainsAdsAndNonAdsContents() {
 	tags := os.Getenv("ADS_CONTENT_TAGS")
 
-	cc := client.MockContentClient{}
+	cc := mock.MockContentClient{}
 	req := contract.NewContentRequest("bleach", "650")
 	ct1 := getFakeAdsContent(1, "ads")
 	ct2 := getFakeContent(2)

@@ -3,12 +3,12 @@ package service
 import (
 	"errors"
 	"github.com/bigscreen/mangindo-feeder/appcontext"
-	"github.com/bigscreen/mangindo-feeder/client"
 	"github.com/bigscreen/mangindo-feeder/config"
 	"github.com/bigscreen/mangindo-feeder/contract"
 	"github.com/bigscreen/mangindo-feeder/domain"
 	mErr "github.com/bigscreen/mangindo-feeder/error"
 	"github.com/bigscreen/mangindo-feeder/logger"
+	"github.com/bigscreen/mangindo-feeder/mock"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
 	"testing"
@@ -29,7 +29,7 @@ func TestChapterServiceTestSuite(t *testing.T) {
 }
 
 func (s *ChapterServiceTestSuite) TestGetChapters_ReturnsError_WhenClientReturnsError() {
-	cc := client.MockChapterClient{}
+	cc := mock.MockChapterClient{}
 	req := contract.NewChapterRequest("bleach")
 
 	cc.On("GetChapterList", req.TitleId).Return(nil, errors.New("some error"))
@@ -43,7 +43,7 @@ func (s *ChapterServiceTestSuite) TestGetChapters_ReturnsError_WhenClientReturns
 }
 
 func (s *ChapterServiceTestSuite) TestGetChapters_ReturnsError_WhenChapterListIsEmpty() {
-	cc := client.MockChapterClient{}
+	cc := mock.MockChapterClient{}
 	req := contract.NewChapterRequest("bleach")
 	res := &domain.ChapterListResponse{Chapters: []domain.Chapter{}}
 
@@ -58,7 +58,7 @@ func (s *ChapterServiceTestSuite) TestGetChapters_ReturnsError_WhenChapterListIs
 }
 
 func (s *ChapterServiceTestSuite) TestGetChapters_ReturnsSuccess_WhenChapterListIsNotEmpty() {
-	cc := client.MockChapterClient{}
+	cc := mock.MockChapterClient{}
 	req := contract.NewChapterRequest("bleach")
 	dc := domain.Chapter{
 		Number:       650.0,
