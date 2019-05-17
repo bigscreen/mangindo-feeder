@@ -7,7 +7,7 @@ This repository contains the source code of Mangindo-Feeder.
 Mangindo-Feeder is a service which has a responsibility to provide friendly responses that are consumable by Mangindo mobile apps, which the responses are produced by mapping original responses from [mangacan](http://mangacanblog.com) web API.
 
 ## Project Setup
-Run the following commands:
+Clone this repo inside `$GOPATH/src/github.com/bigscreen/`, then setup the project by running the following commands:
 ```
 $ make setup
 $ make copy-config
@@ -15,7 +15,18 @@ $ make build
 ```
 
 ## Running Tests
-Run the following commands:
+Run the following command:
 ```
 $ make test
+```
+or run the following command to show coverage per package:
+```
+$ make test-cov
+```
+
+## Running Service
+Run the following command to start this service *(ensure the setup commands have been ran)*:
+```
+make compile
+./out/mangindo-feeder start
 ```
