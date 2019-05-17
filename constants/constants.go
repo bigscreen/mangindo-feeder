@@ -17,6 +17,7 @@ const (
 	TitleIdKeyParam = "title_id"
 	ChapterKeyParam = "chapter"
 
+	MangaCacheExpirationInMn = 60
 	ChapterCacheExpirationInMn = 30
 	ContentCacheExpirationInMn = 60 * 48
 )
