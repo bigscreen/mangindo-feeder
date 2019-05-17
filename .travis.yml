@@ -11,6 +11,7 @@ git:
 install: true
 
 before_script:
+  - redis-server &
   - make setup
 
 script:
