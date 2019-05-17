@@ -16,4 +16,6 @@ const (
 
 	TitleIdKeyParam = "title_id"
 	ChapterKeyParam = "chapter"
+
+	ContentCacheExpirationInHr = 48
 )
