@@ -16,7 +16,7 @@ type Payload struct {
 }
 
 func TestValidatorSuite(t *testing.T) {
-	suite.Run(t, new(PresenceValidatorSuite))
+	suite.Run(t, new(ValidatorSuite))
 }
 
 func (s *ValidatorSuite) TestValidateAll_ReturnsFalse_WhenValidationFails() {
