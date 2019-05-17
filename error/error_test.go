@@ -15,6 +15,28 @@ func TestErrorTestSuite(t *testing.T) {
 	suite.Run(t, new(ErrorTestSuite))
 }
 
+func (s *ErrorTestSuite) TestError_ReturnsGenericError() {
+	err := NewGenericError()
+
+	assert.Equal(s.T(), "Something went wrong", err.Error())
+}
+
+func (s *ErrorTestSuite) TestError_ReturnsNotFoundError() {
+	err := NewNotFoundError("Foo")
+
+	assert.Equal(s.T(), "Could not find Foo", err.Error())
+}
+
+func (s *ErrorTestSuite) TestError_ReturnsValidationError() {
+	err := NewValidationError(map[string]string{
+		"foo": "foo error",
+		"bar": "bar error",
+	})
+
+	assert.Contains(s.T(), err.Error(), "foo error")
+	assert.Contains(s.T(), err.Error(), "bar error")
+}
+
 func (s *ErrorTestSuite) TestGetStatusCodeOf_Returns500() {
 	err := NewGenericError()
 	code := GetStatusCodeOf(err)
