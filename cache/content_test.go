@@ -56,7 +56,7 @@ func (s *ContentCacheTestSuite) TestGet_ReturnsError_WhenKeyIsMissing() {
 }
 
 func (s *ContentCacheTestSuite) TestGet_ReturnsValue_WhenKeyExists() {
-	s.c.redisClient.Set(s.k, "lorem ipsum", 10*time.Second)
+	s.c.redisClient.Set(s.k, "lorem ipsum", 5*time.Second)
 	val, err := s.c.Get(contentTitleId, contentChapter)
 
 	assert.Equal(s.T(), "lorem ipsum", val)
@@ -72,7 +72,7 @@ func (s *ContentCacheTestSuite) TestDelete_WhenKeyIsMissing() {
 }
 
 func (s *ContentCacheTestSuite) TestDelete_WhenKeyExists() {
-	s.c.redisClient.Set(s.k, "lorem ipsum", 10*time.Second)
+	s.c.redisClient.Set(s.k, "lorem ipsum", 5*time.Second)
 	err := s.c.Delete(contentTitleId, contentChapter)
 	val, _ := s.c.redisClient.Get(s.k).Result()
 

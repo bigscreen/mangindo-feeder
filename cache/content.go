@@ -25,7 +25,7 @@ func generateContentCacheKey(titleId, chapter string) string {
 
 func (c *contentCache) Set(titleId, chapter, value string) error {
 	key := generateContentCacheKey(titleId, chapter)
-	err := c.redisClient.Set(key, value, time.Duration(constants.ContentCacheExpirationInHr)*time.Hour).Err()
+	err := c.redisClient.Set(key, value, time.Duration(constants.ContentCacheExpirationInMn)*time.Minute).Err()
 	if err != nil {
 		logger.Errorf("Failed to set %s - %s", key, err)
 	}
