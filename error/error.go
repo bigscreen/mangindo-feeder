@@ -31,6 +31,18 @@ func NewNotFoundError(s string) *NotFoundError {
 	return &NotFoundError{S: s}
 }
 
+type WorkerError struct {
+	S string
+}
+
+func (e *WorkerError) Error() string {
+	return fmt.Sprintf("Failed to enqueue job with error: %s", e.S)
+}
+
+func NewWorkerError(s string) *WorkerError {
+	return &WorkerError{S: s}
+}
+
 type ValidationError struct {
 	validationErrors map[string]string
 }

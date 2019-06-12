@@ -27,6 +27,12 @@ func (s *ErrorTestSuite) TestError_ReturnsNotFoundError() {
 	assert.Equal(s.T(), "Could not find Foo", err.Error())
 }
 
+func (s *ErrorTestSuite) TestError_ReturnsWorkerError() {
+	err := NewWorkerError("Foo")
+
+	assert.Equal(s.T(), "Failed to enqueue job with error: Foo", err.Error())
+}
+
 func (s *ErrorTestSuite) TestError_ReturnsValidationError() {
 	err := NewValidationError(map[string]string{
 		"foo": "foo error",
