@@ -1,11 +1,21 @@
 package service
 
-import "github.com/bigscreen/mangindo-feeder/client"
+import (
+	"github.com/bigscreen/mangindo-feeder/cache"
+	"github.com/bigscreen/mangindo-feeder/cache/manager"
+	"github.com/bigscreen/mangindo-feeder/client"
+)
 
 type Dependencies struct {
 	MangaService   MangaService
 	ChapterService ChapterService
 	ContentService ContentService
+}
+
+type WorkerDependencies struct {
+	MangaCacheManager   manager.MangaCacheManager
+	ChapterCacheManager manager.ChapterCacheManager
+	ContentCacheManager manager.ContentCacheManager
 }
 
 func InstantiateDependencies() Dependencies {
@@ -21,5 +31,25 @@ func InstantiateDependencies() Dependencies {
 		MangaService:   mangaService,
 		ChapterService: chapterService,
 		ContentService: contentService,
+	}
+}
+
+func InstantiateWorkerDependencies() WorkerDependencies {
+	mangaClient := client.NewMangaClient()
+	chapterClient := client.NewChapterClient()
+	contentClient := client.NewContentClient()
+
+	mangaCache := cache.NewMangaCache()
+	chapterCache := cache.NewChapterCache()
+	contentCache := cache.NewContentCache()
+
+	mangaCacheManager := manager.NewMangaCacheManager(mangaClient, mangaCache)
+	chapterCacheManager := manager.NewChapterCacheManager(chapterClient, chapterCache)
+	contentCacheManager := manager.NewContentCacheManager(contentClient, contentCache)
+
+	return WorkerDependencies{
+		MangaCacheManager:   mangaCacheManager,
+		ChapterCacheManager: chapterCacheManager,
+		ContentCacheManager: contentCacheManager,
 	}
 }
