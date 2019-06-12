@@ -1,11 +1,10 @@
 package service
 
 import (
-	"fmt"
 	"github.com/bigscreen/mangindo-feeder/client"
+	"github.com/bigscreen/mangindo-feeder/common"
 	"github.com/bigscreen/mangindo-feeder/contract"
 	mErr "github.com/bigscreen/mangindo-feeder/error"
-	"strings"
 )
 
 type ChapterService interface {
@@ -14,11 +13,6 @@ type ChapterService interface {
 
 type chapterService struct {
 	cClient client.ChapterClient
-}
-
-func getFormattedChapterNumber(chapter float32) string {
-	s := fmt.Sprintf("%.4f", chapter)
-	return strings.TrimRight(strings.TrimRight(s, "0"), ".")
 }
 
 func (s *chapterService) GetChapters(req contract.ChapterRequest) (*[]contract.Chapter, error) {
@@ -34,7 +28,7 @@ func (s *chapterService) GetChapters(req contract.ChapterRequest) (*[]contract.C
 	var chapters []contract.Chapter
 	for _, dc := range cl.Chapters {
 		chapter := contract.Chapter{
-			Number:  getFormattedChapterNumber(dc.Number),
+			Number:  common.GetFormattedChapterNumber(dc.Number),
 			Title:   dc.Title,
 			TitleId: dc.TitleId,
 		}
