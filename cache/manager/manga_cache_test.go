@@ -28,7 +28,7 @@ func TestMangaCacheManagerTestSuite(t *testing.T) {
 	suite.Run(t, new(MangaCacheManagerTestSuite))
 }
 
-func (s *MangaCacheManagerTestSuite) TestSet_ReturnsError_WhenClientReturnsError() {
+func (s *MangaCacheManagerTestSuite) TestSetCache_ReturnsError_WhenClientReturnsError() {
 	mcl := mock.MockMangaClient{}
 	mca := cache.NewMangaCache()
 
@@ -41,7 +41,7 @@ func (s *MangaCacheManagerTestSuite) TestSet_ReturnsError_WhenClientReturnsError
 	mcl.AssertExpectations(s.T())
 }
 
-func (s *MangaCacheManagerTestSuite) TestSet_Succeed() {
+func (s *MangaCacheManagerTestSuite) TestSetCache_Succeed() {
 	mcl := mock.MockMangaClient{}
 	mca := cache.NewMangaCache()
 
