@@ -1,11 +1,14 @@
 package service
 
 import (
+	"github.com/bigscreen/mangindo-feeder/cache/manager"
 	"github.com/bigscreen/mangindo-feeder/client"
 	"github.com/bigscreen/mangindo-feeder/config"
+	"github.com/bigscreen/mangindo-feeder/constants"
 	"github.com/bigscreen/mangindo-feeder/contract"
 	"github.com/bigscreen/mangindo-feeder/domain"
 	mErr "github.com/bigscreen/mangindo-feeder/error"
+	"github.com/bigscreen/mangindo-feeder/logger"
 )
 
 type MangaService interface {
@@ -13,7 +16,9 @@ type MangaService interface {
 }
 
 type mangaService struct {
-	mClient client.MangaClient
+	mangaClient       client.MangaClient
+	mangaCacheManager manager.MangaCacheManager
+	workerService     WorkerService
 }
 
 func getMappedManga(dm domain.Manga) contract.Manga {
@@ -41,9 +46,17 @@ func isPopularManga(titleId string) bool {
 }
 
 func (s *mangaService) GetMangas() (popular *[]contract.Manga, latest *[]contract.Manga, err error) {
-	ml, err := s.mClient.GetMangaList()
+	ml, err := s.mangaCacheManager.GetCache()
 	if err != nil {
-		return nil, nil, mErr.NewGenericError()
+		ml, err = s.mangaClient.GetMangaList()
+		if err != nil {
+			return nil, nil, mErr.NewGenericError()
+		}
+
+		err = s.workerService.SetMangaCache()
+		if err != nil {
+			logger.Errorf("Failed to enqueue %s job, with error: %s", constants.SetMangaCacheJob, err.Error())
+		}
 	}
 
 	if len(ml.Mangas) == 0 {
@@ -72,6 +85,10 @@ func (s *mangaService) GetMangas() (popular *[]contract.Manga, latest *[]contrac
 	return &pMangas, &lMangas, nil
 }
 
-func NewMangaService(mClient client.MangaClient) *mangaService {
-	return &mangaService{mClient: mClient}
+func NewMangaService(mc client.MangaClient, mcm manager.MangaCacheManager, ws WorkerService) *mangaService {
+	return &mangaService{
+		mangaClient:       mc,
+		mangaCacheManager: mcm,
+		workerService:     ws,
+	}
 }

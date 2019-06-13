@@ -1,8 +1,11 @@
 package service
 
 import (
+	"encoding/json"
 	"errors"
 	"github.com/bigscreen/mangindo-feeder/appcontext"
+	"github.com/bigscreen/mangindo-feeder/cache"
+	"github.com/bigscreen/mangindo-feeder/cache/manager"
 	"github.com/bigscreen/mangindo-feeder/config"
 	"github.com/bigscreen/mangindo-feeder/contract"
 	"github.com/bigscreen/mangindo-feeder/domain"
@@ -17,6 +20,11 @@ import (
 
 type MangaServiceTestSuite struct {
 	suite.Suite
+	mca cache.MangaCache
+}
+
+func TestMangaServiceTestSuite(t *testing.T) {
+	suite.Run(t, new(MangaServiceTestSuite))
 }
 
 func (s *MangaServiceTestSuite) SetupSuite() {
@@ -25,45 +33,81 @@ func (s *MangaServiceTestSuite) SetupSuite() {
 	logger.SetupLogger()
 }
 
-func TestMangaServiceTestSuite(t *testing.T) {
-	suite.Run(t, new(MangaServiceTestSuite))
+func (s *MangaServiceTestSuite) SetupTest() {
+	s.mca = cache.NewMangaCache()
 }
 
-func (s *MangaServiceTestSuite) TestGetMangas_ReturnsError_WhenClientReturnsError() {
+func (s *MangaServiceTestSuite) TestGetMangas_ReturnsError_WhenCacheMissesAndClientReturnsError() {
 	mc := mock.MangaClientMock{}
+	ws := mock.WorkerServiceMock{}
+	mcm := manager.NewMangaCacheManager(mc, s.mca)
 
 	mc.On("GetMangaList").Return(nil, errors.New("some error"))
 
-	ms := NewMangaService(mc)
+	ms := NewMangaService(mc, mcm, ws)
 	pMangas, lMangas, err := ms.GetMangas()
 
 	assert.Nil(s.T(), pMangas)
 	assert.Nil(s.T(), lMangas)
 	assert.Equal(s.T(), mErr.NewGenericError().Error(), err.Error())
+
 	mc.AssertExpectations(s.T())
+	ws.AssertNotCalled(s.T(), "SetMangaCache")
 }
 
-func (s *MangaServiceTestSuite) TestGetMangas_ReturnsError_WhenMangaListIsEmpty() {
+func (s *MangaServiceTestSuite) TestGetMangas_ReturnsError_WhenCacheHitsAndMangaListIsEmpty() {
 	mc := mock.MangaClientMock{}
-	res := &domain.MangaListResponse{Mangas: []domain.Manga{}}
+	ws := mock.WorkerServiceMock{}
+	mcm := manager.NewMangaCacheManager(mc, s.mca)
 
-	mc.On("GetMangaList").Return(res, nil)
+	mr := domain.MangaListResponse{Mangas: []domain.Manga{}}
+	cb, _ := json.Marshal(mr)
+	_ = s.mca.Set(string(cb))
+	defer s.mca.Delete()
 
-	ms := NewMangaService(mc)
+	ms := NewMangaService(mc, mcm, ws)
 	pMangas, lMangas, err := ms.GetMangas()
 
 	assert.Nil(s.T(), pMangas)
 	assert.Nil(s.T(), lMangas)
 	assert.Equal(s.T(), mErr.NewNotFoundError("manga").Error(), err.Error())
-	mc.AssertExpectations(s.T())
+
+	mc.AssertNotCalled(s.T(), "GetMangaList")
+	ws.AssertNotCalled(s.T(), "SetMangaCache")
 }
 
-func (s *MangaServiceTestSuite) TestGetMangas_ReturnsOnlyPopularMangas_WhenMangaListContainsOnlyPopularMangas() {
+func (s *MangaServiceTestSuite) TestGetMangas_ReturnsError_WhenCacheMissesAndMangaListIsEmpty() {
+	mc := mock.MangaClientMock{}
+	ws := mock.WorkerServiceMock{}
+	mcm := manager.NewMangaCacheManager(mc, s.mca)
+
+	mr := domain.MangaListResponse{Mangas: []domain.Manga{}}
+	mc.On("GetMangaList").Return(&mr, nil)
+	ws.On("SetMangaCache").Return(nil)
+
+	ms := NewMangaService(mc, mcm, ws)
+	pMangas, lMangas, err := ms.GetMangas()
+
+	assert.Nil(s.T(), pMangas)
+	assert.Nil(s.T(), lMangas)
+	assert.Equal(s.T(), mErr.NewNotFoundError("manga").Error(), err.Error())
+
+	mc.AssertExpectations(s.T())
+	ws.AssertExpectations(s.T())
+}
+
+func (s *MangaServiceTestSuite) TestGetMangas_ReturnsPopularMangas_WhenCacheHitsAndMangaListContainsOnlyPopularMangas() {
 	tags := os.Getenv("POPULAR_MANGA_TAGS")
 
 	mc := mock.MangaClientMock{}
+	ws := mock.WorkerServiceMock{}
+	mcm := manager.NewMangaCacheManager(mc, s.mca)
+
 	dm := getFakePopularManga()
-	res := &domain.MangaListResponse{Mangas: []domain.Manga{dm}}
+	mr := domain.MangaListResponse{Mangas: []domain.Manga{dm}}
+	cb, _ := json.Marshal(mr)
+	_ = s.mca.Set(string(cb))
+	defer s.mca.Delete()
 
 	_ = os.Setenv("POPULAR_MANGA_TAGS", "one_piece")
 	config.Load()
@@ -72,9 +116,7 @@ func (s *MangaServiceTestSuite) TestGetMangas_ReturnsOnlyPopularMangas_WhenManga
 		config.Load()
 	}()
 
-	mc.On("GetMangaList").Return(res, nil)
-
-	ms := NewMangaService(mc)
+	ms := NewMangaService(mc, mcm, ws)
 	pMangas, lMangas, err := ms.GetMangas()
 
 	fpManga := (*pMangas)[0]
@@ -83,15 +125,17 @@ func (s *MangaServiceTestSuite) TestGetMangas_ReturnsOnlyPopularMangas_WhenManga
 	assert.Nil(s.T(), lMangas)
 	assert.True(s.T(), len(*pMangas) > 0)
 	assertMappedManga(s.T(), dm, fpManga)
-	mc.AssertExpectations(s.T())
+
+	mc.AssertNotCalled(s.T(), "GetMangaList")
+	ws.AssertNotCalled(s.T(), "SetMangaCache")
 }
 
-func (s *MangaServiceTestSuite) TestGetMangas_ReturnsOnlyLatestMangas_WhenMangaListContainsOnlyLatestMangas() {
+func (s *MangaServiceTestSuite) TestGetMangas_ReturnsPopularMangas_WhenCacheMissesAndMangaListContainsOnlyPopularMangas() {
 	tags := os.Getenv("POPULAR_MANGA_TAGS")
 
 	mc := mock.MangaClientMock{}
-	dm := getFakeLatestManga()
-	res := &domain.MangaListResponse{Mangas: []domain.Manga{dm}}
+	ws := mock.WorkerServiceMock{}
+	mcm := manager.NewMangaCacheManager(mc, s.mca)
 
 	_ = os.Setenv("POPULAR_MANGA_TAGS", "one_piece")
 	config.Load()
@@ -100,9 +144,46 @@ func (s *MangaServiceTestSuite) TestGetMangas_ReturnsOnlyLatestMangas_WhenMangaL
 		config.Load()
 	}()
 
-	mc.On("GetMangaList").Return(res, nil)
+	dm := getFakePopularManga()
+	mr := domain.MangaListResponse{Mangas: []domain.Manga{dm}}
+	mc.On("GetMangaList").Return(&mr, nil)
+	ws.On("SetMangaCache").Return(nil)
 
-	ms := NewMangaService(mc)
+	ms := NewMangaService(mc, mcm, ws)
+	pMangas, lMangas, err := ms.GetMangas()
+
+	fpManga := (*pMangas)[0]
+
+	assert.Nil(s.T(), err)
+	assert.Nil(s.T(), lMangas)
+	assert.True(s.T(), len(*pMangas) > 0)
+	assertMappedManga(s.T(), dm, fpManga)
+
+	mc.AssertExpectations(s.T())
+	ws.AssertExpectations(s.T())
+}
+
+func (s *MangaServiceTestSuite) TestGetMangas_ReturnsLatestMangas_WhenCacheHitsAndMangaListContainsOnlyLatestMangas() {
+	tags := os.Getenv("POPULAR_MANGA_TAGS")
+
+	mc := mock.MangaClientMock{}
+	ws := mock.WorkerServiceMock{}
+	mcm := manager.NewMangaCacheManager(mc, s.mca)
+
+	dm := getFakeLatestManga()
+	mr := domain.MangaListResponse{Mangas: []domain.Manga{dm}}
+	cb, _ := json.Marshal(mr)
+	_ = s.mca.Set(string(cb))
+	defer s.mca.Delete()
+
+	_ = os.Setenv("POPULAR_MANGA_TAGS", "one_piece")
+	config.Load()
+	defer func() {
+		_ = os.Setenv("POPULAR_MANGA_TAGS", tags)
+		config.Load()
+	}()
+
+	ms := NewMangaService(mc, mcm, ws)
 	pMangas, lMangas, err := ms.GetMangas()
 
 	flManga := (*lMangas)[0]
@@ -111,16 +192,17 @@ func (s *MangaServiceTestSuite) TestGetMangas_ReturnsOnlyLatestMangas_WhenMangaL
 	assert.Nil(s.T(), pMangas)
 	assert.True(s.T(), len(*lMangas) > 0)
 	assertMappedManga(s.T(), dm, flManga)
-	mc.AssertExpectations(s.T())
+
+	mc.AssertNotCalled(s.T(), "GetMangaList")
+	ws.AssertNotCalled(s.T(), "SetMangaCache")
 }
 
-func (s *MangaServiceTestSuite) TestGetMangas_ReturnsAllMangas() {
+func (s *MangaServiceTestSuite) TestGetMangas_ReturnsLatestMangas_WhenCacheMissesAndMangaListContainsOnlyLatestMangas() {
 	tags := os.Getenv("POPULAR_MANGA_TAGS")
 
 	mc := mock.MangaClientMock{}
-	dpm := getFakePopularManga()
-	dlm := getFakeLatestManga()
-	res := &domain.MangaListResponse{Mangas: []domain.Manga{dpm, dlm}}
+	ws := mock.WorkerServiceMock{}
+	mcm := manager.NewMangaCacheManager(mc, s.mca)
 
 	_ = os.Setenv("POPULAR_MANGA_TAGS", "one_piece")
 	config.Load()
@@ -129,9 +211,47 @@ func (s *MangaServiceTestSuite) TestGetMangas_ReturnsAllMangas() {
 		config.Load()
 	}()
 
-	mc.On("GetMangaList").Return(res, nil)
+	dm := getFakeLatestManga()
+	mr := domain.MangaListResponse{Mangas: []domain.Manga{dm}}
+	mc.On("GetMangaList").Return(&mr, nil)
+	ws.On("SetMangaCache").Return(nil)
 
-	ms := NewMangaService(mc)
+	ms := NewMangaService(mc, mcm, ws)
+	pMangas, lMangas, err := ms.GetMangas()
+
+	flManga := (*lMangas)[0]
+
+	assert.Nil(s.T(), err)
+	assert.Nil(s.T(), pMangas)
+	assert.True(s.T(), len(*lMangas) > 0)
+	assertMappedManga(s.T(), dm, flManga)
+
+	mc.AssertExpectations(s.T())
+	ws.AssertExpectations(s.T())
+}
+
+func (s *MangaServiceTestSuite) TestGetMangas_ReturnsAllMangas_WhenCacheHits() {
+	tags := os.Getenv("POPULAR_MANGA_TAGS")
+
+	mc := mock.MangaClientMock{}
+	ws := mock.WorkerServiceMock{}
+	mcm := manager.NewMangaCacheManager(mc, s.mca)
+
+	dpm := getFakePopularManga()
+	dlm := getFakeLatestManga()
+	mr := domain.MangaListResponse{Mangas: []domain.Manga{dpm, dlm}}
+	cb, _ := json.Marshal(mr)
+	_ = s.mca.Set(string(cb))
+	defer s.mca.Delete()
+
+	_ = os.Setenv("POPULAR_MANGA_TAGS", "one_piece")
+	config.Load()
+	defer func() {
+		_ = os.Setenv("POPULAR_MANGA_TAGS", tags)
+		config.Load()
+	}()
+
+	ms := NewMangaService(mc, mcm, ws)
 	pMangas, lMangas, err := ms.GetMangas()
 
 	fpManga := (*pMangas)[0]
@@ -142,7 +262,45 @@ func (s *MangaServiceTestSuite) TestGetMangas_ReturnsAllMangas() {
 	assert.True(s.T(), len(*lMangas) > 0)
 	assertMappedManga(s.T(), dpm, fpManga)
 	assertMappedManga(s.T(), dlm, flManga)
+
+	mc.AssertNotCalled(s.T(), "GetMangaList")
+	ws.AssertNotCalled(s.T(), "SetMangaCache")
+}
+
+func (s *MangaServiceTestSuite) TestGetMangas_ReturnsAllMangas_WhenCacheMisses() {
+	tags := os.Getenv("POPULAR_MANGA_TAGS")
+
+	mc := mock.MangaClientMock{}
+	ws := mock.WorkerServiceMock{}
+	mcm := manager.NewMangaCacheManager(mc, s.mca)
+
+	_ = os.Setenv("POPULAR_MANGA_TAGS", "one_piece")
+	config.Load()
+	defer func() {
+		_ = os.Setenv("POPULAR_MANGA_TAGS", tags)
+		config.Load()
+	}()
+
+	dpm := getFakePopularManga()
+	dlm := getFakeLatestManga()
+	mr := domain.MangaListResponse{Mangas: []domain.Manga{dpm, dlm}}
+	mc.On("GetMangaList").Return(&mr, nil)
+	ws.On("SetMangaCache").Return(nil)
+
+	ms := NewMangaService(mc, mcm, ws)
+	pMangas, lMangas, err := ms.GetMangas()
+
+	fpManga := (*pMangas)[0]
+	flManga := (*lMangas)[0]
+
+	assert.Nil(s.T(), err)
+	assert.True(s.T(), len(*pMangas) > 0)
+	assert.True(s.T(), len(*lMangas) > 0)
+	assertMappedManga(s.T(), dpm, fpManga)
+	assertMappedManga(s.T(), dlm, flManga)
+
 	mc.AssertExpectations(s.T())
+	ws.AssertExpectations(s.T())
 }
 
 func getFakePopularManga() domain.Manga {

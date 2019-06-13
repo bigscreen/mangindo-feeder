@@ -1,6 +1,7 @@
 package service
 
 import (
+	"github.com/bigscreen/mangindo-feeder/appcontext"
 	"github.com/bigscreen/mangindo-feeder/cache"
 	"github.com/bigscreen/mangindo-feeder/cache/manager"
 	"github.com/bigscreen/mangindo-feeder/client"
@@ -23,7 +24,13 @@ func InstantiateDependencies() Dependencies {
 	chapterClient := client.NewChapterClient()
 	contentClient := client.NewContentClient()
 
-	mangaService := NewMangaService(mangaClient)
+	mangaCache := cache.NewMangaCache()
+
+	mangaCacheManager := manager.NewMangaCacheManager(mangaClient, mangaCache)
+
+	workerService := NewWorkerService(appcontext.GetWorkerAdapter())
+
+	mangaService := NewMangaService(mangaClient, mangaCacheManager, workerService)
 	chapterService := NewChapterService(chapterClient)
 	contentService := NewContentService(contentClient)
 
