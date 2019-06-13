@@ -2,9 +2,11 @@ package manager
 
 import (
 	"encoding/json"
+	"errors"
 	"github.com/bigscreen/mangindo-feeder/cache"
 	"github.com/bigscreen/mangindo-feeder/client"
 	"github.com/bigscreen/mangindo-feeder/common"
+	"github.com/bigscreen/mangindo-feeder/domain"
 )
 
 type contentCacheManager struct {
@@ -14,6 +16,7 @@ type contentCacheManager struct {
 
 type ContentCacheManager interface {
 	SetCache(titleId string, chapter float32) error
+	GetCache(titleId string, chapter float32) (*domain.ContentListResponse, error)
 }
 
 func (m *contentCacheManager) SetCache(titleId string, chapter float32) error {
@@ -25,6 +28,21 @@ func (m *contentCacheManager) SetCache(titleId string, chapter float32) error {
 	cs, _ := json.Marshal(cl)
 
 	return m.cCache.Set(titleId, common.GetFormattedChapterNumber(chapter), string(cs))
+}
+
+func (m *contentCacheManager) GetCache(titleId string, chapter float32) (*domain.ContentListResponse, error) {
+	cs, err := m.cCache.Get(titleId, common.GetFormattedChapterNumber(chapter))
+	if err != nil {
+		return nil, err
+	}
+
+	var cl *domain.ContentListResponse
+	err = json.Unmarshal([]byte(cs), &cl)
+	if err != nil {
+		return nil, errors.New("invalid content cache")
+	}
+
+	return cl, nil
 }
 
 func NewContentCacheManager(client client.ContentClient, cache cache.ContentCache) *contentCacheManager {

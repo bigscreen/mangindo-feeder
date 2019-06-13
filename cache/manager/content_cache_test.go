@@ -47,12 +47,8 @@ func (s *ContentCacheManagerTestSuite) TestSetCache_WhenSucceed() {
 	ccl := mock.MockContentClient{}
 	cca := cache.NewContentCache()
 
-	ct1 := getFakeContent(1)
-	ct2 := getFakeContent(2)
-	res := &domain.ContentListResponse{
-		Contents: []domain.Content{ct1, ct2},
-	}
-	ccl.On("GetContentList", "bleach", float32(650.0)).Return(res, nil)
+	res := getFakeContentList()
+	ccl.On("GetContentList", "bleach", float32(650.0)).Return(&res, nil)
 
 	ccm := NewContentCacheManager(ccl, cca)
 	err := ccm.SetCache("bleach", float32(650.0))
@@ -65,6 +61,52 @@ func (s *ContentCacheManagerTestSuite) TestSetCache_WhenSucceed() {
 	ccl.AssertExpectations(s.T())
 
 	_ = cca.Delete("bleach", "650")
+}
+
+func (s *ContentCacheManagerTestSuite) TestGetCache_ReturnsError_WhenCacheIsMissing() {
+	cca := cache.NewContentCache()
+	ccm := NewContentCacheManager(mock.MockContentClient{}, cca)
+
+	cl, err := ccm.GetCache("bleach", float32(650.0))
+
+	assert.Nil(s.T(), cl)
+	assert.Equal(s.T(), "redis: nil", err.Error())
+}
+
+func (s *ContentCacheManagerTestSuite) TestGetCache_ReturnsError_WhenCacheIsInvalid() {
+	cca := cache.NewContentCache()
+	ccm := NewContentCacheManager(mock.MockContentClient{}, cca)
+
+	_ = cca.Set("bleach", "650", "foo")
+	defer cca.Delete("bleach", "650")
+
+	cl, err := ccm.GetCache("bleach", float32(650.0))
+
+	assert.Nil(s.T(), cl)
+	assert.Equal(s.T(), "invalid content cache", err.Error())
+}
+
+func (s *ContentCacheManagerTestSuite) TestGetCache_ReturnsContentList_WhenCacheIsStored() {
+	cca := cache.NewContentCache()
+	ccm := NewContentCacheManager(mock.MockContentClient{}, cca)
+
+	cb, _ := json.Marshal(getFakeContentList())
+	_ = cca.Set("bleach", "650", string(cb))
+	defer cca.Delete("bleach", "650")
+
+	cl, err := ccm.GetCache("bleach", float32(650.0))
+
+	assert.Nil(s.T(), err)
+	assert.True(s.T(), len(cl.Contents) > 0)
+}
+
+func getFakeContentList() domain.ContentListResponse {
+	return domain.ContentListResponse{
+		Contents: []domain.Content{
+			getFakeContent(1),
+			getFakeContent(2),
+		},
+	}
 }
 
 func getFakeContent(page int) domain.Content {
