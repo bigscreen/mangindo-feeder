@@ -42,6 +42,7 @@ func (s *ChapterServiceTestSuite) TestGetChapters_ReturnsError_WhenCacheMissesAn
 	ccm := manager.NewChapterCacheManager(cc, s.cca)
 
 	req := contract.NewChapterRequest("bleach")
+
 	cc.On("GetChapterList", req.TitleId).Return(nil, errors.New("some error"))
 
 	cs := NewChapterService(cc, ccm, ws)

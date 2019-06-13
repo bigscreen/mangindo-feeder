@@ -1,10 +1,13 @@
 package service
 
 import (
+	"github.com/bigscreen/mangindo-feeder/cache/manager"
 	"github.com/bigscreen/mangindo-feeder/client"
 	"github.com/bigscreen/mangindo-feeder/config"
+	"github.com/bigscreen/mangindo-feeder/constants"
 	"github.com/bigscreen/mangindo-feeder/contract"
 	mErr "github.com/bigscreen/mangindo-feeder/error"
+	"github.com/bigscreen/mangindo-feeder/logger"
 	"strings"
 )
 
@@ -13,7 +16,9 @@ type ContentService interface {
 }
 
 type contentService struct {
-	cClient client.ContentClient
+	contentClient       client.ContentClient
+	contentCacheManager manager.ContentCacheManager
+	workerService       WorkerService
 }
 
 func getEncodedUrl(url string) string {
@@ -30,9 +35,17 @@ func isAdsContentUrl(url string) bool {
 }
 
 func (s *contentService) GetContents(req contract.ContentRequest) (*[]contract.Content, error) {
-	cl, err := s.cClient.GetContentList(req.TitleId, req.Chapter)
+	cl, err := s.contentCacheManager.GetCache(req.TitleId, req.Chapter)
 	if err != nil {
-		return nil, mErr.NewGenericError()
+		cl, err = s.contentClient.GetContentList(req.TitleId, req.Chapter)
+		if err != nil {
+			return nil, mErr.NewGenericError()
+		}
+
+		err = s.workerService.SetContentCache(req.TitleId, req.Chapter)
+		if err != nil {
+			logger.Errorf("Failed to enqueue %s job, with error: %s", constants.SetContentCacheJob, err.Error())
+		}
 	}
 
 	if len(cl.Contents) == 0 {
@@ -54,6 +67,10 @@ func (s *contentService) GetContents(req contract.ContentRequest) (*[]contract.C
 	return &contents, nil
 }
 
-func NewContentService(cClient client.ContentClient) *contentService {
-	return &contentService{cClient: cClient}
+func NewContentService(cc client.ContentClient, ccm manager.ContentCacheManager, ws WorkerService) *contentService {
+	return &contentService{
+		contentClient:       cc,
+		contentCacheManager: ccm,
+		workerService:       ws,
+	}
 }

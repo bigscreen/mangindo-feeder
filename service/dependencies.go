@@ -26,15 +26,17 @@ func InstantiateDependencies() Dependencies {
 
 	maca := cache.NewMangaCache()
 	chca := cache.NewChapterCache()
+	coca := cache.NewContentCache()
 
 	macm := manager.NewMangaCacheManager(macl, maca)
 	chcm := manager.NewChapterCacheManager(chcl, chca)
+	cocm := manager.NewContentCacheManager(cocl, coca)
 
 	ws := NewWorkerService(appcontext.GetWorkerAdapter())
 
 	mas := NewMangaService(macl, macm, ws)
 	chs := NewChapterService(chcl, chcm, ws)
-	cos := NewContentService(cocl)
+	cos := NewContentService(cocl, cocm, ws)
 
 	return Dependencies{
 		MangaService:   mas,
