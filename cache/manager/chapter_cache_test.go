@@ -29,7 +29,7 @@ func TestChapterCacheManagerTestSuite(t *testing.T) {
 }
 
 func (s *ChapterCacheManagerTestSuite) TestSetCache_ReturnsError_WhenClientReturnsError() {
-	ccl := mock.MockChapterClient{}
+	ccl := mock.ChapterClientMock{}
 	cca := cache.NewChapterCache()
 
 	ccl.On("GetChapterList", "bleach").Return(nil, errors.New("some error"))
@@ -42,7 +42,7 @@ func (s *ChapterCacheManagerTestSuite) TestSetCache_ReturnsError_WhenClientRetur
 }
 
 func (s *ChapterCacheManagerTestSuite) TestSetCache_WhenSucceed() {
-	ccl := mock.MockChapterClient{}
+	ccl := mock.ChapterClientMock{}
 	cca := cache.NewChapterCache()
 
 	res := getFakeChapterList()
@@ -63,7 +63,7 @@ func (s *ChapterCacheManagerTestSuite) TestSetCache_WhenSucceed() {
 
 func (s *ChapterCacheManagerTestSuite) TestGetCache_ReturnsError_WhenCacheIsMissing() {
 	cca := cache.NewChapterCache()
-	ccm := NewChapterCacheManager(mock.MockChapterClient{}, cca)
+	ccm := NewChapterCacheManager(mock.ChapterClientMock{}, cca)
 
 	cl, err := ccm.GetCache("bleach")
 
@@ -73,7 +73,7 @@ func (s *ChapterCacheManagerTestSuite) TestGetCache_ReturnsError_WhenCacheIsMiss
 
 func (s *ChapterCacheManagerTestSuite) TestGetCache_ReturnsError_WhenCacheIsInvalid() {
 	cca := cache.NewChapterCache()
-	ccm := NewChapterCacheManager(mock.MockChapterClient{}, cca)
+	ccm := NewChapterCacheManager(mock.ChapterClientMock{}, cca)
 
 	_ = cca.Set("bleach", "foo")
 	defer cca.Delete("bleach")
@@ -86,7 +86,7 @@ func (s *ChapterCacheManagerTestSuite) TestGetCache_ReturnsError_WhenCacheIsInva
 
 func (s *ChapterCacheManagerTestSuite) TestGetCache_ReturnsChapterList_WhenCacheIsStored() {
 	cca := cache.NewChapterCache()
-	ccm := NewChapterCacheManager(mock.MockChapterClient{}, cca)
+	ccm := NewChapterCacheManager(mock.ChapterClientMock{}, cca)
 
 	cb, _ := json.Marshal(getFakeChapterList())
 	_ = cca.Set("bleach", string(cb))

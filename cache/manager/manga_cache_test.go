@@ -29,7 +29,7 @@ func TestMangaCacheManagerTestSuite(t *testing.T) {
 }
 
 func (s *MangaCacheManagerTestSuite) TestSetCache_ReturnsError_WhenClientReturnsError() {
-	mcl := mock.MockMangaClient{}
+	mcl := mock.MangaClientMock{}
 	mca := cache.NewMangaCache()
 
 	mcl.On("GetMangaList").Return(nil, errors.New("some error"))
@@ -42,7 +42,7 @@ func (s *MangaCacheManagerTestSuite) TestSetCache_ReturnsError_WhenClientReturns
 }
 
 func (s *MangaCacheManagerTestSuite) TestSetCache_Succeed() {
-	mcl := mock.MockMangaClient{}
+	mcl := mock.MangaClientMock{}
 	mca := cache.NewMangaCache()
 
 	res := getFakeMangaList()
@@ -63,7 +63,7 @@ func (s *MangaCacheManagerTestSuite) TestSetCache_Succeed() {
 
 func (s *MangaCacheManagerTestSuite) TestGetCache_ReturnsError_WhenCacheIsMissing() {
 	mca := cache.NewMangaCache()
-	mcm := NewMangaCacheManager(mock.MockMangaClient{}, mca)
+	mcm := NewMangaCacheManager(mock.MangaClientMock{}, mca)
 
 	ml, err := mcm.GetCache()
 
@@ -73,7 +73,7 @@ func (s *MangaCacheManagerTestSuite) TestGetCache_ReturnsError_WhenCacheIsMissin
 
 func (s *MangaCacheManagerTestSuite) TestGetCache_ReturnsError_WhenCacheIsInvalid() {
 	mca := cache.NewMangaCache()
-	mcm := NewMangaCacheManager(mock.MockMangaClient{}, mca)
+	mcm := NewMangaCacheManager(mock.MangaClientMock{}, mca)
 
 	_ = mca.Set("foo")
 	defer mca.Delete()
@@ -86,7 +86,7 @@ func (s *MangaCacheManagerTestSuite) TestGetCache_ReturnsError_WhenCacheIsInvali
 
 func (s *MangaCacheManagerTestSuite) TestGetCache_ReturnsMangaList_WhenCacheIsStored() {
 	mca := cache.NewMangaCache()
-	mcm := NewMangaCacheManager(mock.MockMangaClient{}, mca)
+	mcm := NewMangaCacheManager(mock.MangaClientMock{}, mca)
 
 	cb, _ := json.Marshal(getFakeMangaList())
 	_ = mca.Set(string(cb))

@@ -37,7 +37,7 @@ func (s *MangaHandlerTestSuite) TestGetMangas_ReturnsError_WhenUnknownErrorHappe
 	rr := httptest.NewRecorder()
 	err := mErr.NewGenericError()
 
-	ms := mMock.MockMangaService{}
+	ms := mMock.MangaServiceMock{}
 	ms.On("GetMangas").Return(nil, nil, err)
 
 	h := GetMangas(ms)
@@ -57,7 +57,7 @@ func (s *MangaHandlerTestSuite) TestGetMangas_ReturnsError_WhenMangasDoNotExist(
 	rr := httptest.NewRecorder()
 	err := mErr.NewNotFoundError("manga")
 
-	ms := mMock.MockMangaService{}
+	ms := mMock.MangaServiceMock{}
 	ms.On("GetMangas").Return(nil, nil, err)
 
 	h := GetMangas(ms)
@@ -82,7 +82,7 @@ func (s *MangaHandlerTestSuite) TestGetMangas_ReturnsSuccess_WhenOnlyPopularMang
 		LatestMangas:  []contract.Manga{},
 	}
 
-	ms := mMock.MockMangaService{}
+	ms := mMock.MangaServiceMock{}
 	ms.On("GetMangas").Return(&pms, nil, nil)
 
 	h := GetMangas(ms)
@@ -107,7 +107,7 @@ func (s *MangaHandlerTestSuite) TestGetMangas_ReturnsSuccess_WhenOnlyLatestManga
 		LatestMangas:  lms,
 	}
 
-	ms := mMock.MockMangaService{}
+	ms := mMock.MangaServiceMock{}
 	ms.On("GetMangas").Return(nil, &lms, nil)
 
 	h := GetMangas(ms)
@@ -133,7 +133,7 @@ func (s *MangaHandlerTestSuite) TestGetMangas_ReturnsSuccess_WhenPopularAndLates
 		LatestMangas:  lms,
 	}
 
-	ms := mMock.MockMangaService{}
+	ms := mMock.MangaServiceMock{}
 	ms.On("GetMangas").Return(&pms, &lms, nil)
 
 	h := GetMangas(ms)

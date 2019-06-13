@@ -29,7 +29,7 @@ func TestChapterServiceTestSuite(t *testing.T) {
 }
 
 func (s *ChapterServiceTestSuite) TestGetChapters_ReturnsError_WhenClientReturnsError() {
-	cc := mock.MockChapterClient{}
+	cc := mock.ChapterClientMock{}
 	req := contract.NewChapterRequest("bleach")
 
 	cc.On("GetChapterList", req.TitleId).Return(nil, errors.New("some error"))
@@ -43,7 +43,7 @@ func (s *ChapterServiceTestSuite) TestGetChapters_ReturnsError_WhenClientReturns
 }
 
 func (s *ChapterServiceTestSuite) TestGetChapters_ReturnsError_WhenChapterListIsEmpty() {
-	cc := mock.MockChapterClient{}
+	cc := mock.ChapterClientMock{}
 	req := contract.NewChapterRequest("bleach")
 	res := &domain.ChapterListResponse{Chapters: []domain.Chapter{}}
 
@@ -58,7 +58,7 @@ func (s *ChapterServiceTestSuite) TestGetChapters_ReturnsError_WhenChapterListIs
 }
 
 func (s *ChapterServiceTestSuite) TestGetChapters_ReturnsSuccess_WhenChapterListIsNotEmpty() {
-	cc := mock.MockChapterClient{}
+	cc := mock.ChapterClientMock{}
 	req := contract.NewChapterRequest("bleach")
 	dc := domain.Chapter{
 		Number:       650.0,

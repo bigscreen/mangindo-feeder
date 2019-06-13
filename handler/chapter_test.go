@@ -51,7 +51,7 @@ func (s *ChapterHandlerTestSuite) SetupTest() {
 }
 
 func (s *ChapterHandlerTestSuite) TestGetChapters_ReturnsError_WhenQueryParamIsBlank() {
-	cs := mMock.MockChapterService{}
+	cs := mMock.ChapterServiceMock{}
 
 	req, rr := buildChapterRequest(" ")
 
@@ -67,7 +67,7 @@ func (s *ChapterHandlerTestSuite) TestGetChapters_ReturnsError_WhenQueryParamIsB
 
 func (s *ChapterHandlerTestSuite) TestGetChapters_ReturnsError_WhenUnknownErrorHappens() {
 	err := mErr.NewGenericError()
-	cs := mMock.MockChapterService{}
+	cs := mMock.ChapterServiceMock{}
 	cs.On("GetChapters", contract.NewChapterRequest("foo")).Return(nil, err)
 
 	req, rr := buildChapterRequest("foo")
@@ -85,7 +85,7 @@ func (s *ChapterHandlerTestSuite) TestGetChapters_ReturnsError_WhenUnknownErrorH
 
 func (s *ChapterHandlerTestSuite) TestGetChapters_ReturnsError_WhenChaptersDoNotExist() {
 	err := mErr.NewNotFoundError("chapter")
-	cs := mMock.MockChapterService{}
+	cs := mMock.ChapterServiceMock{}
 	cs.On("GetChapters", contract.NewChapterRequest("foo")).Return(nil, err)
 
 	req, rr := buildChapterRequest("foo")
@@ -108,7 +108,7 @@ func (s *ChapterHandlerTestSuite) TestGetChapters_ReturnsSuccess_WhenChaptersExi
 		TitleId: "foo",
 	}
 	ccs := []contract.Chapter{cc}
-	cs := mMock.MockChapterService{}
+	cs := mMock.ChapterServiceMock{}
 	cs.On("GetChapters", contract.NewChapterRequest("foo")).Return(&ccs, nil)
 
 	req, rr := buildChapterRequest("foo")

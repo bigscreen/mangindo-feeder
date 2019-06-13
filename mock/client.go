@@ -5,11 +5,11 @@ import (
 	"github.com/stretchr/testify/mock"
 )
 
-type MockMangaClient struct {
+type MangaClientMock struct {
 	mock.Mock
 }
 
-func (m MockMangaClient) GetMangaList() (*domain.MangaListResponse, error) {
+func (m MangaClientMock) GetMangaList() (*domain.MangaListResponse, error) {
 	args := m.Called()
 	if args.Get(1) != nil {
 		return nil, args.Get(1).(error)
@@ -17,11 +17,11 @@ func (m MockMangaClient) GetMangaList() (*domain.MangaListResponse, error) {
 	return args.Get(0).(*domain.MangaListResponse), nil
 }
 
-type MockChapterClient struct {
+type ChapterClientMock struct {
 	mock.Mock
 }
 
-func (m MockChapterClient) GetChapterList(titleId string) (*domain.ChapterListResponse, error) {
+func (m ChapterClientMock) GetChapterList(titleId string) (*domain.ChapterListResponse, error) {
 	args := m.Called(titleId)
 	if args.Get(1) != nil {
 		return nil, args.Get(1).(error)
@@ -29,11 +29,11 @@ func (m MockChapterClient) GetChapterList(titleId string) (*domain.ChapterListRe
 	return args.Get(0).(*domain.ChapterListResponse), nil
 }
 
-type MockContentClient struct {
+type ContentClientMock struct {
 	mock.Mock
 }
 
-func (m MockContentClient) GetContentList(titleId string, chapter float32) (*domain.ContentListResponse, error) {
+func (m ContentClientMock) GetContentList(titleId string, chapter float32) (*domain.ContentListResponse, error) {
 	args := m.Called(titleId, chapter)
 	if args.Get(1) != nil {
 		return nil, args.Get(1).(error)

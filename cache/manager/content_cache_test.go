@@ -29,7 +29,7 @@ func TestContentCacheManagerTestSuite(t *testing.T) {
 }
 
 func (s *ContentCacheManagerTestSuite) TestSetCache_ReturnsError_WhenClientReturnsError() {
-	ccl := mock.MockContentClient{}
+	ccl := mock.ContentClientMock{}
 	cca := cache.NewContentCache()
 
 	ccl.
@@ -44,7 +44,7 @@ func (s *ContentCacheManagerTestSuite) TestSetCache_ReturnsError_WhenClientRetur
 }
 
 func (s *ContentCacheManagerTestSuite) TestSetCache_WhenSucceed() {
-	ccl := mock.MockContentClient{}
+	ccl := mock.ContentClientMock{}
 	cca := cache.NewContentCache()
 
 	res := getFakeContentList()
@@ -65,7 +65,7 @@ func (s *ContentCacheManagerTestSuite) TestSetCache_WhenSucceed() {
 
 func (s *ContentCacheManagerTestSuite) TestGetCache_ReturnsError_WhenCacheIsMissing() {
 	cca := cache.NewContentCache()
-	ccm := NewContentCacheManager(mock.MockContentClient{}, cca)
+	ccm := NewContentCacheManager(mock.ContentClientMock{}, cca)
 
 	cl, err := ccm.GetCache("bleach", float32(650.0))
 
@@ -75,7 +75,7 @@ func (s *ContentCacheManagerTestSuite) TestGetCache_ReturnsError_WhenCacheIsMiss
 
 func (s *ContentCacheManagerTestSuite) TestGetCache_ReturnsError_WhenCacheIsInvalid() {
 	cca := cache.NewContentCache()
-	ccm := NewContentCacheManager(mock.MockContentClient{}, cca)
+	ccm := NewContentCacheManager(mock.ContentClientMock{}, cca)
 
 	_ = cca.Set("bleach", "650", "foo")
 	defer cca.Delete("bleach", "650")
@@ -88,7 +88,7 @@ func (s *ContentCacheManagerTestSuite) TestGetCache_ReturnsError_WhenCacheIsInva
 
 func (s *ContentCacheManagerTestSuite) TestGetCache_ReturnsContentList_WhenCacheIsStored() {
 	cca := cache.NewContentCache()
-	ccm := NewContentCacheManager(mock.MockContentClient{}, cca)
+	ccm := NewContentCacheManager(mock.ContentClientMock{}, cca)
 
 	cb, _ := json.Marshal(getFakeContentList())
 	_ = cca.Set("bleach", "650", string(cb))
