@@ -35,8 +35,8 @@ func registerSetChapterCacheJob(w adapter.Worker, d service.WorkerDependencies) 
 func registerSetContentCacheJob(w adapter.Worker, d service.WorkerDependencies) {
 	err := w.Register(constants.SetContentCacheJob, func(args adapter.Args) error {
 		titleId := args[constants.JobArgTitleId].(string)
-		chapter := args[constants.JobArgChapter].(float32)
-		return d.ContentCacheManager.SetCache(titleId, chapter)
+		chapter := args[constants.JobArgChapter].(float64)
+		return d.ContentCacheManager.SetCache(titleId, float32(chapter))
 	})
 	if err != nil {
 		logger.Errorf("Error while registering %s job, error: %s", constants.SetContentCacheJob, err.Error())
