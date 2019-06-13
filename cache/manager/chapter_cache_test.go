@@ -45,14 +45,8 @@ func (s *ChapterCacheManagerTestSuite) TestSetCache_WhenSucceed() {
 	ccl := mock.MockChapterClient{}
 	cca := cache.NewChapterCache()
 
-	dc := domain.Chapter{
-		Number:       650.0,
-		Title:        "Bleach",
-		TitleId:      "bleach",
-		ModifiedDate: "2016-08-18 18:59:58",
-	}
-	res := &domain.ChapterListResponse{Chapters: []domain.Chapter{dc}}
-	ccl.On("GetChapterList", "bleach").Return(res, nil)
+	res := getFakeChapterList()
+	ccl.On("GetChapterList", "bleach").Return(&res, nil)
 
 	ccm := NewChapterCacheManager(ccl, cca)
 	err := ccm.SetCache("bleach")
@@ -65,4 +59,54 @@ func (s *ChapterCacheManagerTestSuite) TestSetCache_WhenSucceed() {
 	ccl.AssertExpectations(s.T())
 
 	_ = cca.Delete("bleach")
+}
+
+func (s *ChapterCacheManagerTestSuite) TestGetCache_ReturnsError_WhenCacheIsMissing() {
+	cca := cache.NewChapterCache()
+	ccm := NewChapterCacheManager(mock.MockChapterClient{}, cca)
+
+	cl, err := ccm.GetCache("bleach")
+
+	assert.Nil(s.T(), cl)
+	assert.Equal(s.T(), "redis: nil", err.Error())
+}
+
+func (s *ChapterCacheManagerTestSuite) TestGetCache_ReturnsError_WhenCacheIsInvalid() {
+	cca := cache.NewChapterCache()
+	ccm := NewChapterCacheManager(mock.MockChapterClient{}, cca)
+
+	_ = cca.Set("bleach", "foo")
+	defer cca.Delete("bleach")
+
+	cl, err := ccm.GetCache("bleach")
+
+	assert.Nil(s.T(), cl)
+	assert.Equal(s.T(), "invalid chapter cache", err.Error())
+}
+
+func (s *ChapterCacheManagerTestSuite) TestGetCache_ReturnsChapterList_WhenCacheIsStored() {
+	cca := cache.NewChapterCache()
+	ccm := NewChapterCacheManager(mock.MockChapterClient{}, cca)
+
+	cb, _ := json.Marshal(getFakeChapterList())
+	_ = cca.Set("bleach", string(cb))
+	defer cca.Delete("bleach")
+
+	cl, err := ccm.GetCache("bleach")
+
+	assert.Nil(s.T(), err)
+	assert.True(s.T(), len(cl.Chapters) > 0)
+}
+
+func getFakeChapterList() domain.ChapterListResponse {
+	return domain.ChapterListResponse{
+		Chapters: []domain.Chapter{
+			{
+				Number:       650.0,
+				Title:        "Bleach",
+				TitleId:      "bleach",
+				ModifiedDate: "2016-08-18 18:59:58",
+			},
+		},
+	}
 }
