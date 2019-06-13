@@ -45,10 +45,8 @@ func (s *MangaCacheManagerTestSuite) TestSetCache_Succeed() {
 	mcl := mock.MockMangaClient{}
 	mca := cache.NewMangaCache()
 
-	dpm := getFakePopularManga()
-	dlm := getFakeLatestManga()
-	res := &domain.MangaListResponse{Mangas: []domain.Manga{dpm, dlm}}
-	mcl.On("GetMangaList").Return(res, nil)
+	res := getFakeMangaList()
+	mcl.On("GetMangaList").Return(&res, nil)
 
 	mcm := NewMangaCacheManager(mcl, mca)
 	err := mcm.SetCache()
@@ -61,6 +59,52 @@ func (s *MangaCacheManagerTestSuite) TestSetCache_Succeed() {
 	mcl.AssertExpectations(s.T())
 
 	_ = mca.Delete()
+}
+
+func (s *MangaCacheManagerTestSuite) TestGetCache_ReturnsError_WhenCacheIsMissing() {
+	mca := cache.NewMangaCache()
+	mcm := NewMangaCacheManager(mock.MockMangaClient{}, mca)
+
+	ml, err := mcm.GetCache()
+
+	assert.Nil(s.T(), ml)
+	assert.Equal(s.T(), "redis: nil", err.Error())
+}
+
+func (s *MangaCacheManagerTestSuite) TestGetCache_ReturnsError_WhenCacheIsInvalid() {
+	mca := cache.NewMangaCache()
+	mcm := NewMangaCacheManager(mock.MockMangaClient{}, mca)
+
+	_ = mca.Set("foo")
+	defer mca.Delete()
+
+	ml, err := mcm.GetCache()
+
+	assert.Nil(s.T(), ml)
+	assert.Equal(s.T(), "invalid manga cache", err.Error())
+}
+
+func (s *MangaCacheManagerTestSuite) TestGetCache_ReturnsMangaList_WhenCacheIsStored() {
+	mca := cache.NewMangaCache()
+	mcm := NewMangaCacheManager(mock.MockMangaClient{}, mca)
+
+	cb, _ := json.Marshal(getFakeMangaList())
+	_ = mca.Set(string(cb))
+	defer mca.Delete()
+
+	ml, err := mcm.GetCache()
+
+	assert.Nil(s.T(), err)
+	assert.True(s.T(), len(ml.Mangas) > 0)
+}
+
+func getFakeMangaList() domain.MangaListResponse {
+	return domain.MangaListResponse{
+		Mangas: []domain.Manga{
+			getFakePopularManga(),
+			getFakeLatestManga(),
+		},
+	}
 }
 
 func getFakePopularManga() domain.Manga {
