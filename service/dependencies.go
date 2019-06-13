@@ -20,24 +20,26 @@ type WorkerDependencies struct {
 }
 
 func InstantiateDependencies() Dependencies {
-	mangaClient := client.NewMangaClient()
-	chapterClient := client.NewChapterClient()
-	contentClient := client.NewContentClient()
+	macl := client.NewMangaClient()
+	chcl := client.NewChapterClient()
+	cocl := client.NewContentClient()
 
-	mangaCache := cache.NewMangaCache()
+	maca := cache.NewMangaCache()
+	chca := cache.NewChapterCache()
 
-	mangaCacheManager := manager.NewMangaCacheManager(mangaClient, mangaCache)
+	macm := manager.NewMangaCacheManager(macl, maca)
+	chcm := manager.NewChapterCacheManager(chcl, chca)
 
-	workerService := NewWorkerService(appcontext.GetWorkerAdapter())
+	ws := NewWorkerService(appcontext.GetWorkerAdapter())
 
-	mangaService := NewMangaService(mangaClient, mangaCacheManager, workerService)
-	chapterService := NewChapterService(chapterClient)
-	contentService := NewContentService(contentClient)
+	mas := NewMangaService(macl, macm, ws)
+	chs := NewChapterService(chcl, chcm, ws)
+	cos := NewContentService(cocl)
 
 	return Dependencies{
-		MangaService:   mangaService,
-		ChapterService: chapterService,
-		ContentService: contentService,
+		MangaService:   mas,
+		ChapterService: chs,
+		ContentService: cos,
 	}
 }
 
