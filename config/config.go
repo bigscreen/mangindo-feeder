@@ -8,7 +8,6 @@ import (
 type Config struct {
 	port               int
 	logLevel           string
-	environment        string
 	redisHost          string
 	redisPort          int
 	redisPool          int
@@ -37,7 +36,6 @@ func Load() {
 	appConfig = &Config{
 		port:               getIntOrPanic("APP_PORT"),
 		logLevel:           fatalGetString("LOG_LEVEL"),
-		environment:        fatalGetString("ENVIRONMENT"),
 		redisHost:          fatalGetString("REDIS_HOST"),
 		redisPort:          getIntOrPanic("REDIS_PORT"),
 		redisPool:          getIntOrPanic("REDIS_POOL"),
@@ -60,10 +58,6 @@ func Port() int {
 
 func LogLevel() string {
 	return appConfig.logLevel
-}
-
-func Environment() string {
-	return appConfig.environment
 }
 
 func RedisHost() string {

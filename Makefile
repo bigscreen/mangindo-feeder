@@ -1,53 +1,52 @@
 .PHONY: all
-all: build fmt vet lint test
+all: copy-config setup build fmt lint test
 
 APP=mangindo-feeder
-ALL_PACKAGES=$(shell go list ./... | grep -v "vendor")
-UNIT_TEST_PACKAGES=$(shell  go list ./... | grep -v "vendor")
-
 APP_EXECUTABLE="./out/$(APP)"
 
-setup:
-	go get -u github.com/golang/dep/cmd/dep
-	go get -u github.com/golang/lint/golint
-	go get -u github.com/mattn/goveralls
+# BUILD #
 
-build-deps:
-	dep ensure
+clean:
+	GO111MODULE=on go clean
+	rm -rf out/
 
-update-deps:
-	dep ensure
+install-linter:
+	bin/install-linter
 
-compile:
+setup: install-linter
+	GO111MODULE=off go get golang.org/x/tools/cmd/goimports
+
+build:
+	clean
 	mkdir -p out/
-	go build -o $(APP_EXECUTABLE)
+	GO111MODULE=on go build -o $(APP_EXECUTABLE)
 
-build: build-deps compile fmt
-
-install:
-	go install ./...
-
-fmt:
-	go fmt ./...
-
-vet:
-	go vet ./...
-
-lint:
-	@for p in $(UNIT_TEST_PACKAGES); do \
-		echo "==> Linting $$p"; \
-		golint $$p | { grep -vwE "exported (var|function|method|type|const) \S+ should have comment" || true; } \
-	done
-
-test:
-	ENVIRONMENT=test go test $(UNIT_TEST_PACKAGES) -p=1
-
-test-cov:
-	ENVIRONMENT=test go test $(UNIT_TEST_PACKAGES) -p=1 -covermode=count
-
-test-ci: copy-config build-deps compile fmt
-	go test $(UNIT_TEST_PACKAGES) -p=1 -covermode=count -coverprofile=profile.cov
-	goveralls -coverprofile=profile.cov -service=travis-ci
+# DEV SETUP #
 
 copy-config:
 	cp application.yml.sample application.yml
+
+fmt:
+	GO111MODULE=on go fmt ./...
+
+vet:
+	GO111MODULE=on go vet ./...
+
+lint: install-linter
+	./bin/golangci-lint --new-from-rev="origin/master" --config=".golangci-prod.toml" -v run
+
+lint-all: install-linter
+	./bin/golangci-lint --config=".golangci-prod.toml" -v --max-same-issues=0 --max-issues-per-linter=0 run
+
+# TESTS #
+
+test:
+	GO111MODULE=off go get github.com/rakyll/gotest
+	GO111MODULE=on gotest -p=1 -mod=readonly ./...
+
+test-ci: copy-config build fmt lint
+	GO111MODULE=on go test -p=1 covermode=count -coverprofile=profile.cov ./...
+	goveralls -coverprofile=profile.cov -service=travis-ci
+
+test-cov:
+	GO111MODULE=on go test -p=1 -covermode=count ./...

@@ -9,8 +9,8 @@ Mangindo-Feeder is a service which has a responsibility to provide friendly resp
 ## Project Setup
 Clone this repo inside `$GOPATH/src/github.com/bigscreen/`, then setup the project by running the following commands:
 ```
-$ make setup
 $ make copy-config
+$ make setup
 $ make build
 ```
 
@@ -27,6 +27,6 @@ $ make test-cov
 ## Running Service
 Run the following command to start this service *(ensure the setup commands have been ran)*:
 ```
-make compile
+make build
 ./out/mangindo-feeder start
 ```
