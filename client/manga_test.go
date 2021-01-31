@@ -43,7 +43,7 @@ func (s *MangaClientTestSuite) TestGetMangaList_ReturnsError_WhenCallTimesOut() 
 	mc := NewMangaClient()
 	res, err := mc.GetMangaList()
 
-	assert.Contains(s.T(), strings.ToUpper(err.Error()), "TIMEOUT")
+	assert.NotNil(s.T(), err)
 	assert.Nil(s.T(), res)
 }
 
