@@ -16,8 +16,7 @@ install-linter:
 setup: install-linter
 	GO111MODULE=off go get golang.org/x/tools/cmd/goimports
 
-build:
-	clean
+build: clean
 	mkdir -p out/
 	GO111MODULE=on go build -o $(APP_EXECUTABLE)
 
