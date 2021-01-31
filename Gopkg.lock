@@ -30,6 +30,14 @@
   revision = "fa1af6a1f4f56e0e50d427fe901cd604d8c6fb8a"
 
 [[projects]]
+  digest = "1:57840705195634873ce9e1fa65d87dd1169352f793e6e3cfb81570b95350a79b"
+  name = "github.com/braintree/manners"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "0b5e6b2c2843f4c83c2a40f96980b09cf4af733c"
+  version = "0.4.0"
+
+[[projects]]
   digest = "1:fed1f537c2f1269fe475a8556c393fe466641682d73ef8fd0491cd3aa1e47bad"
   name = "github.com/certifi/gocertifi"
   packages = ["."]
@@ -86,9 +94,21 @@
   version = "v6.15.2"
 
 [[projects]]
-  digest = "1:615643b442214e7a9bade98fa7d50ec072fd17bdc5c955daa194b32e73a532a8"
-  name = "github.com/gocraft/work"
+  digest = "1:f1a4ade97d756dc02db21c22d2b78cffff70785db97b6b18808efdf961407aca"
+  name = "github.com/gocraft/web"
   packages = ["."]
+  pruneopts = "UT"
+  revision = "0973dfd3866277297f7caed311af67cc4ca1126e"
+  version = "v1.1"
+
+[[projects]]
+  digest = "1:62467722367eb6e8368e1294b2df6ed482ba7a87ed22ce91e36226df4bbe2380"
+  name = "github.com/gocraft/work"
+  packages = [
+    ".",
+    "webui",
+    "webui/internal/assets",
+  ]
   pruneopts = "UT"
   revision = "1d4117a214abff263b472043871c8666aedb716b"
   version = "v0.5.1"
@@ -332,6 +352,7 @@
     "github.com/getsentry/raven-go",
     "github.com/go-redis/redis",
     "github.com/gocraft/work",
+    "github.com/gocraft/work/webui",
     "github.com/gojektech/heimdall",
     "github.com/gomodule/redigo/redis",
     "github.com/gorilla/mux",

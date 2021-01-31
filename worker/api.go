@@ -3,9 +3,11 @@ package worker
 import (
 	"context"
 	"github.com/bigscreen/mangindo-feeder/appcontext"
+	"github.com/bigscreen/mangindo-feeder/constants"
 	"github.com/bigscreen/mangindo-feeder/logger"
 	"github.com/bigscreen/mangindo-feeder/service"
 	"github.com/bigscreen/mangindo-feeder/worker/adapter"
+	"github.com/gocraft/work/webui"
 	"os"
 	"os/signal"
 	"syscall"
@@ -39,5 +41,24 @@ func waitForWorkerShutDown(worker adapter.Worker) {
 }
 
 func StartWorkerWebServer() {
-	logger.Debug("Starting worker web server")
+	logger.Info("Starting worker web server")
+	server := InitWorkerWebServer()
+	server.Start()
+	waitForWorkerWebShutdown(server)
+}
+
+func InitWorkerWebServer() *webui.Server {
+	server := webui.NewServer(constants.WorkerName, appcontext.GetWorkerRedisPool(), ":5040")
+	return server
+}
+
+func waitForWorkerWebShutdown(server *webui.Server) {
+	sig := make(chan os.Signal, 1)
+	signal.Notify(sig,
+		syscall.SIGINT,
+		syscall.SIGTERM)
+	reason := <-sig
+	logger.Info("Worker web is shutting down ", reason)
+	server.Stop()
+	logger.Info("Worker web shutdown complete")
 }
