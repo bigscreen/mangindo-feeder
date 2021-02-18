@@ -1,5 +1,5 @@
 .PHONY: all
-all: copy-config setup build fmt lint test
+all: copy-config build fmt lint test
 
 APP=mangindo-feeder
 APP_EXECUTABLE="./out/$(APP)"
@@ -12,9 +12,6 @@ clean:
 
 install-linter:
 	bin/install-linter
-
-setup: install-linter
-	GO111MODULE=off go get golang.org/x/tools/cmd/goimports
 
 build: clean
 	mkdir -p out/
@@ -32,10 +29,7 @@ vet:
 	GO111MODULE=on go vet ./...
 
 lint: install-linter
-	./bin/golangci-lint --new-from-rev="origin/master" --config=".golangci-prod.toml" -v run
-
-lint-all: install-linter
-	./bin/golangci-lint --config=".golangci-prod.toml" -v --max-same-issues=0 --max-issues-per-linter=0 run
+	GO111MODULE=on ./bin/golangci-lint --config=".golangci.toml" -v run
 
 # TESTS #
 
@@ -43,7 +37,7 @@ test:
 	GO111MODULE=off go get github.com/rakyll/gotest
 	GO111MODULE=on gotest -p=1 -mod=readonly ./...
 
-test-ci: copy-config build fmt lint
+test-ci: copy-config build lint
 	GO111MODULE=on go test -p=1 covermode=count -coverprofile=profile.cov ./...
 	goveralls -coverprofile=profile.cov -service=travis-ci
 

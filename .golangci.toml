@@ -31,9 +31,17 @@
     # Detects when assignments to existing variables are not used.
     "ineffassign",
 
+    # https://github.com/opennota/check
+    # Finds unused struct fields.
+    "structcheck",
+
     # https://github.com/dominikh/go-tools/tree/master/stylecheck
     # Similar to and replacement for golint - prints out style mistakes.
     "stylecheck",
+
+    # https://github.com/securego/gosec
+    # Inspects source code for security problems.
+    "gosec",
 
     # https://github.com/mdempsky/unconvert
     # Removes unnecessary type conversions.
@@ -47,6 +55,10 @@
     # Finds repeated strings that could be replaced by a constant.
     "goconst",
 
+    # https://golang.org/cmd/gofmt/
+    # Checks whether code was gofmt-ed.
+    "gofmt",
+
     # https://godoc.org/golang.org/x/tools/cmd/goimports
     # Checks unused imports and imports grouping.
     "goimports",
@@ -55,6 +67,10 @@
     # Finds commonly misspelled English words in comments.
     "misspell",
 
+    # https://github.com/mvdan/unparam
+    # Reports unused function parameters.
+    "unparam",
+
     # https://github.com/alexkohler/nakedret
     # Finds naked returns in functions greater than a specified function length.
     "nakedret",
@@ -62,19 +78,16 @@
 
 # Options for analysis running
 [run]
+  # timeout for analysis, e.g. 30s, 5m, default is 1m
+  timeout = "10m"
+
   # Which dirs to skip: issues from them won't be reported;
   # can use regexp here: generated.*, regexp is applied on full path;
   # By default, directories such as `vendor/` are skipped independently from this
   # option's value.
   skip-dirs = [
     "bin",
-    "migrations",
     "out",
-    "swagger",
-  ]
-
-  skip-files = [
-    ".*mock.*\\.go$"
   ]
 
   # golangci-lint passes it to "go list -mod={option}". From "go help modules":
