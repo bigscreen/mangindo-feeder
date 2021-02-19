@@ -47,4 +47,5 @@ test-cov: install-gotest
 	GO111MODULE=on gotest -p=1 -mod=readonly -covermode=count -coverprofile=out/coverage.cov $(UNIT_TEST_PACKAGES)
 
 test-ci: copy-config build lint test-cov
-	goveralls -coverprofile=out/coverage.cov -service=travis-ci
+	GO111MODULE=off go get github.com/mattn/goveralls
+	GO111MODULE=on goveralls -coverprofile=out/coverage.cov -service=travis-ci
