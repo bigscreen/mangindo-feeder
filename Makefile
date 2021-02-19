@@ -3,6 +3,7 @@ all: copy-config build fmt lint test
 
 APP=mangindo-feeder
 APP_EXECUTABLE="./out/$(APP)"
+UNIT_TEST_PACKAGES=$(shell  go list ./...)
 
 # BUILD #
 
@@ -36,13 +37,14 @@ imports:
 
 # TESTS #
 
-test:
+install-gotest:
 	GO111MODULE=off go get github.com/rakyll/gotest
-	GO111MODULE=on gotest -p=1 -mod=readonly ./...
 
-test-ci: copy-config build lint
-	GO111MODULE=on go test -p=1 covermode=count -coverprofile=profile.cov ./...
-	goveralls -coverprofile=profile.cov -service=travis-ci
+test: install-gotest
+	GO111MODULE=on gotest -p=1 -mod=readonly $(UNIT_TEST_PACKAGES)
 
-test-cov:
-	GO111MODULE=on go test -p=1 -covermode=count ./...
+test-cov: install-gotest
+	GO111MODULE=on gotest -p=1 -mod=readonly -covermode=count -coverprofile=out/coverage.cov $(UNIT_TEST_PACKAGES)
+
+test-ci: copy-config build lint test-cov
+	goveralls -coverprofile=out/coverage.cov -service=travis-ci
