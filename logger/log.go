@@ -4,8 +4,8 @@ import (
 	"log"
 	"os"
 
-	"github.com/Sirupsen/logrus"
 	"github.com/bigscreen/mangindo-feeder/config"
+	"github.com/sirupsen/logrus"
 )
 
 var logger *logrus.Logger

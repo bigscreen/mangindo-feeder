@@ -1,53 +1,51 @@
 .PHONY: all
-all: build fmt vet lint test
+all: copy-config build fmt lint test
 
 APP=mangindo-feeder
-ALL_PACKAGES=$(shell go list ./... | grep -v "vendor")
-UNIT_TEST_PACKAGES=$(shell  go list ./... | grep -v "vendor")
-
 APP_EXECUTABLE="./out/$(APP)"
+UNIT_TEST_PACKAGES=$(shell  go list ./...)
 
-setup:
-	go get -u github.com/golang/dep/cmd/dep
-	go get -u github.com/golang/lint/golint
-	go get -u github.com/mattn/goveralls
+# BUILD #
 
-build-deps:
-	dep ensure
+clean:
+	GO111MODULE=on go clean
+	rm -rf out/
 
-update-deps:
-	dep ensure
+install-linter:
+	bin/install-linter
 
-compile:
+build: clean
 	mkdir -p out/
-	go build -o $(APP_EXECUTABLE)
+	GO111MODULE=on go build -o $(APP_EXECUTABLE)
 
-build: build-deps compile fmt
-
-install:
-	go install ./...
-
-fmt:
-	go fmt ./...
-
-vet:
-	go vet ./...
-
-lint:
-	@for p in $(UNIT_TEST_PACKAGES); do \
-		echo "==> Linting $$p"; \
-		golint $$p | { grep -vwE "exported (var|function|method|type|const) \S+ should have comment" || true; } \
-	done
-
-test:
-	ENVIRONMENT=test go test $(UNIT_TEST_PACKAGES) -p=1
-
-test-cov:
-	ENVIRONMENT=test go test $(UNIT_TEST_PACKAGES) -p=1 -covermode=count
-
-test-ci: copy-config build-deps compile fmt
-	go test $(UNIT_TEST_PACKAGES) -p=1 -covermode=count -coverprofile=profile.cov
-	goveralls -coverprofile=profile.cov -service=travis-ci
+# DEV SETUP #
 
 copy-config:
 	cp application.yml.sample application.yml
+
+fmt:
+	GO111MODULE=on go fmt ./...
+
+vet:
+	GO111MODULE=on go vet ./...
+
+lint: install-linter
+	GO111MODULE=on ./bin/golangci-lint --config=".golangci.toml" -v run
+
+imports:
+	GO111MODULE=on goimports -w -local github.com ./
+
+# TESTS #
+
+install-gotest:
+	GO111MODULE=off go get github.com/rakyll/gotest
+
+test: install-gotest
+	GO111MODULE=on gotest -p=1 -mod=readonly $(UNIT_TEST_PACKAGES)
+
+test-cov: install-gotest
+	GO111MODULE=on gotest -p=1 -mod=readonly -covermode=count -coverprofile=out/coverage.cov $(UNIT_TEST_PACKAGES)
+
+test-ci: copy-config build lint test-cov
+	GO111MODULE=off go get github.com/mattn/goveralls
+	GO111MODULE=on goveralls -coverprofile=out/coverage.cov -service=travis-ci

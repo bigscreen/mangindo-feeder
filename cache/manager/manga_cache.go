@@ -3,6 +3,7 @@ package manager
 import (
 	"encoding/json"
 	"errors"
+
 	"github.com/bigscreen/mangindo-feeder/cache"
 	"github.com/bigscreen/mangindo-feeder/client"
 	"github.com/bigscreen/mangindo-feeder/domain"

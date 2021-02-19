@@ -21,14 +21,14 @@ type chapterService struct {
 }
 
 func (s *chapterService) GetChapters(req contract.ChapterRequest) (*[]contract.Chapter, error) {
-	cl, err := s.chapterCacheManager.GetCache(req.TitleId)
+	cl, err := s.chapterCacheManager.GetCache(req.TitleID)
 	if err != nil {
-		cl, err = s.chapterClient.GetChapterList(req.TitleId)
+		cl, err = s.chapterClient.GetChapterList(req.TitleID)
 		if err != nil {
 			return nil, mErr.NewGenericError()
 		}
 
-		err = s.workerService.SetChapterCache(req.TitleId)
+		err = s.workerService.SetChapterCache(req.TitleID)
 		if err != nil {
 			logger.Errorf("Failed to enqueue %s job, with error: %s", constants.SetChapterCacheJob, err.Error())
 		}
@@ -43,7 +43,7 @@ func (s *chapterService) GetChapters(req contract.ChapterRequest) (*[]contract.C
 		chapter := contract.Chapter{
 			Number:  common.GetFormattedChapterNumber(dc.Number),
 			Title:   dc.Title,
-			TitleId: dc.TitleId,
+			TitleID: dc.TitleID,
 		}
 		chapters = append(chapters, chapter)
 	}

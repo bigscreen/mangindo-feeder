@@ -13,8 +13,8 @@ type workerService struct {
 
 type WorkerService interface {
 	SetMangaCache() error
-	SetChapterCache(titleId string) error
-	SetContentCache(titleId string, chapter float32) error
+	SetChapterCache(titleID string) error
+	SetContentCache(titleID string, chapter float32) error
 }
 
 func (s *workerService) SetMangaCache() error {
@@ -30,12 +30,12 @@ func (s *workerService) SetMangaCache() error {
 	return nil
 }
 
-func (s *workerService) SetChapterCache(titleId string) error {
+func (s *workerService) SetChapterCache(titleID string) error {
 	err := s.adapter.Perform(adapter.Job{
 		Queue:   constants.WorkerDefaultQueue,
 		Handler: constants.SetChapterCacheJob,
 		Args: adapter.Args{
-			constants.JobArgTitleId: titleId,
+			constants.JobArgTitleID: titleID,
 		},
 	})
 	if err != nil {
@@ -46,12 +46,12 @@ func (s *workerService) SetChapterCache(titleId string) error {
 	return nil
 }
 
-func (s *workerService) SetContentCache(titleId string, chapter float32) error {
+func (s *workerService) SetContentCache(titleID string, chapter float32) error {
 	err := s.adapter.Perform(adapter.Job{
 		Queue:   constants.WorkerDefaultQueue,
 		Handler: constants.SetContentCacheJob,
 		Args: adapter.Args{
-			constants.JobArgTitleId: titleId,
+			constants.JobArgTitleID: titleID,
 			constants.JobArgChapter: chapter,
 		},
 	})

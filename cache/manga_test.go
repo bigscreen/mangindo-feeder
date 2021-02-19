@@ -1,13 +1,14 @@
 package cache
 
 import (
+	"testing"
+	"time"
+
 	"github.com/bigscreen/mangindo-feeder/appcontext"
 	"github.com/bigscreen/mangindo-feeder/config"
 	"github.com/bigscreen/mangindo-feeder/logger"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
-	"testing"
-	"time"
 )
 
 type MangaCacheTestSuite struct {

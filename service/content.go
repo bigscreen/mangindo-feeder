@@ -1,6 +1,8 @@
 package service
 
 import (
+	"strings"
+
 	"github.com/bigscreen/mangindo-feeder/cache/manager"
 	"github.com/bigscreen/mangindo-feeder/client"
 	"github.com/bigscreen/mangindo-feeder/config"
@@ -8,7 +10,6 @@ import (
 	"github.com/bigscreen/mangindo-feeder/contract"
 	mErr "github.com/bigscreen/mangindo-feeder/error"
 	"github.com/bigscreen/mangindo-feeder/logger"
-	"strings"
 )
 
 type ContentService interface {
@@ -21,11 +22,11 @@ type contentService struct {
 	workerService       WorkerService
 }
 
-func getEncodedUrl(url string) string {
+func getEncodedURL(url string) string {
 	return strings.Replace(url, " ", "%20", -1)
 }
 
-func isAdsContentUrl(url string) bool {
+func isAdsContentURL(url string) bool {
 	for _, tag := range config.AdsContentTags() {
 		if strings.Contains(url, tag) {
 			return true
@@ -35,14 +36,14 @@ func isAdsContentUrl(url string) bool {
 }
 
 func (s *contentService) GetContents(req contract.ContentRequest) (*[]contract.Content, error) {
-	cl, err := s.contentCacheManager.GetCache(req.TitleId, req.Chapter)
+	cl, err := s.contentCacheManager.GetCache(req.TitleID, req.Chapter)
 	if err != nil {
-		cl, err = s.contentClient.GetContentList(req.TitleId, req.Chapter)
+		cl, err = s.contentClient.GetContentList(req.TitleID, req.Chapter)
 		if err != nil {
 			return nil, mErr.NewGenericError()
 		}
 
-		err = s.workerService.SetContentCache(req.TitleId, req.Chapter)
+		err = s.workerService.SetContentCache(req.TitleID, req.Chapter)
 		if err != nil {
 			logger.Errorf("Failed to enqueue %s job, with error: %s", constants.SetContentCacheJob, err.Error())
 		}
@@ -54,8 +55,8 @@ func (s *contentService) GetContents(req contract.ContentRequest) (*[]contract.C
 
 	var contents []contract.Content
 	for _, dc := range cl.Contents {
-		if !isAdsContentUrl(dc.ImageURL) {
-			content := contract.Content{ImageURL: getEncodedUrl(dc.ImageURL)}
+		if !isAdsContentURL(dc.ImageURL) {
+			content := contract.Content{ImageURL: getEncodedURL(dc.ImageURL)}
 			contents = append(contents, content)
 		}
 	}

@@ -1,11 +1,12 @@
 package cache
 
 import (
+	"time"
+
 	"github.com/bigscreen/mangindo-feeder/appcontext"
 	"github.com/bigscreen/mangindo-feeder/constants"
 	"github.com/bigscreen/mangindo-feeder/logger"
 	"github.com/go-redis/redis"
-	"time"
 )
 
 type mangaCache struct {

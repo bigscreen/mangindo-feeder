@@ -2,6 +2,7 @@ package appcontext
 
 import (
 	"fmt"
+
 	"github.com/bigscreen/mangindo-feeder/config"
 	"github.com/bigscreen/mangindo-feeder/constants"
 	"github.com/bigscreen/mangindo-feeder/worker/adapter"

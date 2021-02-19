@@ -3,6 +3,8 @@ package manager
 import (
 	"encoding/json"
 	"errors"
+	"testing"
+
 	"github.com/bigscreen/mangindo-feeder/appcontext"
 	"github.com/bigscreen/mangindo-feeder/cache"
 	"github.com/bigscreen/mangindo-feeder/config"
@@ -11,11 +13,16 @@ import (
 	"github.com/bigscreen/mangindo-feeder/mock"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
-	"testing"
 )
 
 type MangaCacheManagerTestSuite struct {
 	suite.Suite
+	mca cache.MangaCache
+	mcl *mock.MangaClientMock
+}
+
+func TestMangaCacheManagerTestSuite(t *testing.T) {
+	suite.Run(t, new(MangaCacheManagerTestSuite))
 }
 
 func (s *MangaCacheManagerTestSuite) SetupSuite() {
@@ -24,47 +31,40 @@ func (s *MangaCacheManagerTestSuite) SetupSuite() {
 	logger.SetupLogger()
 }
 
-func TestMangaCacheManagerTestSuite(t *testing.T) {
-	suite.Run(t, new(MangaCacheManagerTestSuite))
+func (s *MangaCacheManagerTestSuite) SetupTest() {
+	s.mca = cache.NewMangaCache()
+	s.mcl = &mock.MangaClientMock{}
 }
 
 func (s *MangaCacheManagerTestSuite) TestSetCache_ReturnsError_WhenClientReturnsError() {
-	mcl := mock.MangaClientMock{}
-	mca := cache.NewMangaCache()
+	s.mcl.On("GetMangaList").Return(nil, errors.New("some error"))
 
-	mcl.On("GetMangaList").Return(nil, errors.New("some error"))
-
-	mcm := NewMangaCacheManager(mcl, mca)
+	mcm := NewMangaCacheManager(s.mcl, s.mca)
 	err := mcm.SetCache()
 
 	assert.Equal(s.T(), "some error", err.Error())
-	mcl.AssertExpectations(s.T())
+	s.mcl.AssertExpectations(s.T())
 }
 
 func (s *MangaCacheManagerTestSuite) TestSetCache_Succeed() {
-	mcl := mock.MangaClientMock{}
-	mca := cache.NewMangaCache()
-
 	res := getFakeMangaList()
-	mcl.On("GetMangaList").Return(&res, nil)
+	s.mcl.On("GetMangaList").Return(&res, nil)
 
-	mcm := NewMangaCacheManager(mcl, mca)
+	mcm := NewMangaCacheManager(s.mcl, s.mca)
 	err := mcm.SetCache()
 
 	expCache, _ := json.Marshal(res)
-	storedCache, _ := mca.Get()
+	storedCache, _ := s.mca.Get()
 
 	assert.Nil(s.T(), err)
 	assert.Equal(s.T(), string(expCache), storedCache)
-	mcl.AssertExpectations(s.T())
+	s.mcl.AssertExpectations(s.T())
 
-	_ = mca.Delete()
+	_ = s.mca.Delete()
 }
 
 func (s *MangaCacheManagerTestSuite) TestGetCache_ReturnsError_WhenCacheIsMissing() {
-	mca := cache.NewMangaCache()
-	mcm := NewMangaCacheManager(mock.MangaClientMock{}, mca)
-
+	mcm := NewMangaCacheManager(s.mcl, s.mca)
 	ml, err := mcm.GetCache()
 
 	assert.Nil(s.T(), ml)
@@ -72,11 +72,12 @@ func (s *MangaCacheManagerTestSuite) TestGetCache_ReturnsError_WhenCacheIsMissin
 }
 
 func (s *MangaCacheManagerTestSuite) TestGetCache_ReturnsError_WhenCacheIsInvalid() {
-	mca := cache.NewMangaCache()
-	mcm := NewMangaCacheManager(mock.MangaClientMock{}, mca)
+	mcm := NewMangaCacheManager(s.mcl, s.mca)
 
-	_ = mca.Set("foo")
-	defer mca.Delete()
+	_ = s.mca.Set("foo")
+	defer func() {
+		_ = s.mca.Delete()
+	}()
 
 	ml, err := mcm.GetCache()
 
@@ -85,12 +86,13 @@ func (s *MangaCacheManagerTestSuite) TestGetCache_ReturnsError_WhenCacheIsInvali
 }
 
 func (s *MangaCacheManagerTestSuite) TestGetCache_ReturnsMangaList_WhenCacheIsStored() {
-	mca := cache.NewMangaCache()
-	mcm := NewMangaCacheManager(mock.MangaClientMock{}, mca)
+	mcm := NewMangaCacheManager(s.mcl, s.mca)
 
 	cb, _ := json.Marshal(getFakeMangaList())
-	_ = mca.Set(string(cb))
-	defer mca.Delete()
+	_ = s.mca.Set(string(cb))
+	defer func() {
+		_ = s.mca.Delete()
+	}()
 
 	ml, err := mcm.GetCache()
 
@@ -109,9 +111,9 @@ func getFakeMangaList() domain.MangaListResponse {
 
 func getFakePopularManga() domain.Manga {
 	return domain.Manga{
-		Id:           "23",
+		ID:           "23",
 		Title:        "One Piece",
-		TitleId:      "one_piece",
+		TitleID:      "one_piece",
 		IconURL:      "http://foo.com/one_piece.jpg",
 		LastChapter:  "939",
 		ModifiedDate: "2019-04-12 13:05:59",
@@ -126,9 +128,9 @@ func getFakePopularManga() domain.Manga {
 
 func getFakeLatestManga() domain.Manga {
 	return domain.Manga{
-		Id:           "40",
+		ID:           "40",
 		Title:        "Kagamigami",
-		TitleId:      "kagamigami",
+		TitleID:      "kagamigami",
 		IconURL:      "http://foo.com/kagamigami.jpg",
 		LastChapter:  "30",
 		ModifiedDate: "2019-04-12 11:26:49",

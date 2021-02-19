@@ -1,13 +1,13 @@
 package contract
 
 type ChapterRequest struct {
-	TitleId string
+	TitleID string
 }
 
 type Chapter struct {
 	Number  string `json:"number"`
 	Title   string `json:"title"`
-	TitleId string `json:"title_id"`
+	TitleID string `json:"title_id"`
 }
 
 type ChapterResponse struct {
@@ -15,6 +15,6 @@ type ChapterResponse struct {
 	Chapters []Chapter `json:"chapters"`
 }
 
-func NewChapterRequest(titleId string) ChapterRequest {
-	return ChapterRequest{TitleId: titleId}
+func NewChapterRequest(titleID string) ChapterRequest {
+	return ChapterRequest{TitleID: titleID}
 }

@@ -1,19 +1,20 @@
 package client
 
 import (
-	"github.com/ad2games/vcr-go"
+	"io/ioutil"
+	"net/http"
+	"os"
+	"strings"
+	"testing"
+
+	"gopkg.in/h2non/gock.v1"
+
 	"github.com/bigscreen/mangindo-feeder/appcontext"
 	"github.com/bigscreen/mangindo-feeder/config"
 	"github.com/bigscreen/mangindo-feeder/constants"
 	"github.com/bigscreen/mangindo-feeder/logger"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
-	"gopkg.in/h2non/gock.v1"
-	"io/ioutil"
-	"net/http"
-	"os"
-	"strings"
-	"testing"
 )
 
 type ContentClientTestSuite struct {
@@ -43,7 +44,7 @@ func (s *ContentClientTestSuite) TestGetContentList_ReturnsError_WhenCallTimesOu
 	cc := NewContentClient()
 	res, err := cc.GetContentList("bleach", 657.0)
 
-	assert.Contains(s.T(), strings.ToUpper(err.Error()), "TIMEOUT")
+	assert.NotNil(s.T(), err)
 	assert.Nil(s.T(), res)
 }
 
@@ -64,7 +65,7 @@ func (s *ContentClientTestSuite) TestGetContentList_ReturnsError_WhenOriginServe
 	defer gock.Off()
 	gock.New(buildContentListEndpoint("bleach", 657.0)).
 		Reply(http.StatusOK).
-		Body(ioutil.NopCloser(strings.NewReader("null")))
+		Body(ioutil.NopCloser(strings.NewReader(constants.NullText)))
 
 	cc := NewContentClient()
 	res, err := cc.GetContentList("bleach", 657.0)
@@ -89,8 +90,10 @@ func (s *ContentClientTestSuite) TestGetContentList_ReturnsError_WhenOriginServe
 }
 
 func (s *ContentClientTestSuite) TestGetContentList_ReturnsSuccessfulResponse() {
-	vcr.Start("get_content_list_valid_response", nil)
-	defer vcr.Stop()
+	defer gock.Off()
+	gock.New(buildContentListEndpoint("bleach", 657.0)).
+		Reply(http.StatusOK).
+		Body(ioutil.NopCloser(strings.NewReader(`{"chapter":[{"url":"http://mangacanblog.com/mangas/bleach/657 - thunder god 2/mangacanblogcom_bleach_657_01.jpg","page":1},{"url":"http://mangacanblog.com/mangas/bleach/657 - thunder god 2/mangacanblogcom_bleach_657_02.jpg","page":2},{"url":"http://mangacanblog.com/mangas/bleach/657 - thunder god 2/mangacanblogcom_bleach_657_03.jpg","page":3}]}`)))
 
 	cc := NewContentClient()
 	res, err := cc.GetContentList("bleach", 657.0)

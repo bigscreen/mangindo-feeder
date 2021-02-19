@@ -3,6 +3,8 @@ package manager
 import (
 	"encoding/json"
 	"errors"
+	"testing"
+
 	"github.com/bigscreen/mangindo-feeder/appcontext"
 	"github.com/bigscreen/mangindo-feeder/cache"
 	"github.com/bigscreen/mangindo-feeder/config"
@@ -11,11 +13,16 @@ import (
 	"github.com/bigscreen/mangindo-feeder/mock"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
-	"testing"
 )
 
 type ChapterCacheManagerTestSuite struct {
 	suite.Suite
+	cca cache.ChapterCache
+	ccl *mock.ChapterClientMock
+}
+
+func TestChapterCacheManagerTestSuite(t *testing.T) {
+	suite.Run(t, new(ChapterCacheManagerTestSuite))
 }
 
 func (s *ChapterCacheManagerTestSuite) SetupSuite() {
@@ -24,46 +31,40 @@ func (s *ChapterCacheManagerTestSuite) SetupSuite() {
 	logger.SetupLogger()
 }
 
-func TestChapterCacheManagerTestSuite(t *testing.T) {
-	suite.Run(t, new(ChapterCacheManagerTestSuite))
+func (s *ChapterCacheManagerTestSuite) SetupTest() {
+	s.cca = cache.NewChapterCache()
+	s.ccl = &mock.ChapterClientMock{}
 }
 
 func (s *ChapterCacheManagerTestSuite) TestSetCache_ReturnsError_WhenClientReturnsError() {
-	ccl := mock.ChapterClientMock{}
-	cca := cache.NewChapterCache()
+	s.ccl.On("GetChapterList", "bleach").Return(nil, errors.New("some error"))
 
-	ccl.On("GetChapterList", "bleach").Return(nil, errors.New("some error"))
-
-	ccm := NewChapterCacheManager(ccl, cca)
+	ccm := NewChapterCacheManager(s.ccl, s.cca)
 	err := ccm.SetCache("bleach")
 
 	assert.Equal(s.T(), "some error", err.Error())
-	ccl.AssertExpectations(s.T())
+	s.ccl.AssertExpectations(s.T())
 }
 
 func (s *ChapterCacheManagerTestSuite) TestSetCache_WhenSucceed() {
-	ccl := mock.ChapterClientMock{}
-	cca := cache.NewChapterCache()
-
 	res := getFakeChapterList()
-	ccl.On("GetChapterList", "bleach").Return(&res, nil)
+	s.ccl.On("GetChapterList", "bleach").Return(&res, nil)
 
-	ccm := NewChapterCacheManager(ccl, cca)
+	ccm := NewChapterCacheManager(s.ccl, s.cca)
 	err := ccm.SetCache("bleach")
 
 	ec, _ := json.Marshal(res)
-	sc, _ := cca.Get("bleach")
+	sc, _ := s.cca.Get("bleach")
 
 	assert.Nil(s.T(), err)
 	assert.Equal(s.T(), string(ec), sc)
-	ccl.AssertExpectations(s.T())
+	s.ccl.AssertExpectations(s.T())
 
-	_ = cca.Delete("bleach")
+	_ = s.cca.Delete("bleach")
 }
 
 func (s *ChapterCacheManagerTestSuite) TestGetCache_ReturnsError_WhenCacheIsMissing() {
-	cca := cache.NewChapterCache()
-	ccm := NewChapterCacheManager(mock.ChapterClientMock{}, cca)
+	ccm := NewChapterCacheManager(s.ccl, s.cca)
 
 	cl, err := ccm.GetCache("bleach")
 
@@ -72,11 +73,12 @@ func (s *ChapterCacheManagerTestSuite) TestGetCache_ReturnsError_WhenCacheIsMiss
 }
 
 func (s *ChapterCacheManagerTestSuite) TestGetCache_ReturnsError_WhenCacheIsInvalid() {
-	cca := cache.NewChapterCache()
-	ccm := NewChapterCacheManager(mock.ChapterClientMock{}, cca)
+	ccm := NewChapterCacheManager(s.ccl, s.cca)
 
-	_ = cca.Set("bleach", "foo")
-	defer cca.Delete("bleach")
+	_ = s.cca.Set("bleach", "foo")
+	defer func() {
+		_ = s.cca.Delete("bleach")
+	}()
 
 	cl, err := ccm.GetCache("bleach")
 
@@ -85,12 +87,13 @@ func (s *ChapterCacheManagerTestSuite) TestGetCache_ReturnsError_WhenCacheIsInva
 }
 
 func (s *ChapterCacheManagerTestSuite) TestGetCache_ReturnsChapterList_WhenCacheIsStored() {
-	cca := cache.NewChapterCache()
-	ccm := NewChapterCacheManager(mock.ChapterClientMock{}, cca)
+	ccm := NewChapterCacheManager(s.ccl, s.cca)
 
 	cb, _ := json.Marshal(getFakeChapterList())
-	_ = cca.Set("bleach", string(cb))
-	defer cca.Delete("bleach")
+	_ = s.cca.Set("bleach", string(cb))
+	defer func() {
+		_ = s.cca.Delete("bleach")
+	}()
 
 	cl, err := ccm.GetCache("bleach")
 
@@ -104,7 +107,7 @@ func getFakeChapterList() domain.ChapterListResponse {
 			{
 				Number:       650.0,
 				Title:        "Bleach",
-				TitleId:      "bleach",
+				TitleID:      "bleach",
 				ModifiedDate: "2016-08-18 18:59:58",
 			},
 		},

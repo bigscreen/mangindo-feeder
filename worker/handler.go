@@ -1,6 +1,8 @@
 package worker
 
 import (
+	"fmt"
+
 	"github.com/bigscreen/mangindo-feeder/constants"
 	"github.com/bigscreen/mangindo-feeder/logger"
 	"github.com/bigscreen/mangindo-feeder/service"
@@ -24,8 +26,11 @@ func registerSetMangaCacheJob(w adapter.Worker, d service.WorkerDependencies) {
 
 func registerSetChapterCacheJob(w adapter.Worker, d service.WorkerDependencies) {
 	err := w.Register(constants.SetChapterCacheJob, func(args adapter.Args) error {
-		titleId := args[constants.JobArgTitleId].(string)
-		return d.ChapterCacheManager.SetCache(titleId)
+		titleID, ok := args[constants.JobArgTitleID].(string)
+		if !ok {
+			return fmt.Errorf("can not get argument %s", constants.JobArgTitleID)
+		}
+		return d.ChapterCacheManager.SetCache(titleID)
 	})
 	if err != nil {
 		logger.Errorf("Error while registering %s job, error: %s", constants.SetChapterCacheJob, err.Error())
@@ -34,9 +39,15 @@ func registerSetChapterCacheJob(w adapter.Worker, d service.WorkerDependencies) 
 
 func registerSetContentCacheJob(w adapter.Worker, d service.WorkerDependencies) {
 	err := w.Register(constants.SetContentCacheJob, func(args adapter.Args) error {
-		titleId := args[constants.JobArgTitleId].(string)
-		chapter := args[constants.JobArgChapter].(float64)
-		return d.ContentCacheManager.SetCache(titleId, float32(chapter))
+		titleID, ok := args[constants.JobArgTitleID].(string)
+		if !ok {
+			return fmt.Errorf("can not get argument %s", constants.JobArgTitleID)
+		}
+		chapter, ok := args[constants.JobArgChapter].(float64)
+		if !ok {
+			return fmt.Errorf("can not get argument %s", constants.JobArgChapter)
+		}
+		return d.ContentCacheManager.SetCache(titleID, float32(chapter))
 	})
 	if err != nil {
 		logger.Errorf("Error while registering %s job, error: %s", constants.SetContentCacheJob, err.Error())

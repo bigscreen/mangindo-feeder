@@ -3,6 +3,7 @@ package manager
 import (
 	"encoding/json"
 	"errors"
+
 	"github.com/bigscreen/mangindo-feeder/cache"
 	"github.com/bigscreen/mangindo-feeder/client"
 	"github.com/bigscreen/mangindo-feeder/common"
@@ -15,23 +16,23 @@ type contentCacheManager struct {
 }
 
 type ContentCacheManager interface {
-	SetCache(titleId string, chapter float32) error
-	GetCache(titleId string, chapter float32) (*domain.ContentListResponse, error)
+	SetCache(titleID string, chapter float32) error
+	GetCache(titleID string, chapter float32) (*domain.ContentListResponse, error)
 }
 
-func (m *contentCacheManager) SetCache(titleId string, chapter float32) error {
-	cl, err := m.cClient.GetContentList(titleId, chapter)
+func (m *contentCacheManager) SetCache(titleID string, chapter float32) error {
+	cl, err := m.cClient.GetContentList(titleID, chapter)
 	if err != nil {
 		return err
 	}
 
 	cs, _ := json.Marshal(cl)
 
-	return m.cCache.Set(titleId, common.GetFormattedChapterNumber(chapter), string(cs))
+	return m.cCache.Set(titleID, common.GetFormattedChapterNumber(chapter), string(cs))
 }
 
-func (m *contentCacheManager) GetCache(titleId string, chapter float32) (*domain.ContentListResponse, error) {
-	cs, err := m.cCache.Get(titleId, common.GetFormattedChapterNumber(chapter))
+func (m *contentCacheManager) GetCache(titleID string, chapter float32) (*domain.ContentListResponse, error) {
+	cs, err := m.cCache.Get(titleID, common.GetFormattedChapterNumber(chapter))
 	if err != nil {
 		return nil, err
 	}

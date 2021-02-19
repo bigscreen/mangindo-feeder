@@ -1,9 +1,10 @@
 package config
 
 import (
-	"github.com/stretchr/testify/assert"
 	"os"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestConfig(t *testing.T) {
@@ -28,7 +29,6 @@ func TestConfig(t *testing.T) {
 	Load()
 	assert.Equal(t, 3001, Port())
 	assert.Equal(t, configVars["LOG_LEVEL"], LogLevel())
-	assert.Equal(t, configVars["ENVIRONMENT"], Environment())
 	assert.Equal(t, configVars["REDIS_HOST"], RedisHost())
 	assert.Equal(t, 6379, RedisPort())
 	assert.Equal(t, 10, RedisPool())

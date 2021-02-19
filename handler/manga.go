@@ -1,10 +1,11 @@
 package handler
 
 import (
+	"net/http"
+
 	"github.com/bigscreen/mangindo-feeder/contract"
 	mErr "github.com/bigscreen/mangindo-feeder/error"
 	"github.com/bigscreen/mangindo-feeder/service"
-	"net/http"
 )
 
 func GetMangas(s service.MangaService) http.HandlerFunc {

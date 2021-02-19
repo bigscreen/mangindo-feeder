@@ -1,23 +1,24 @@
 package handler
 
 import (
+	"net/http"
+
 	"github.com/bigscreen/mangindo-feeder/constants"
 	"github.com/bigscreen/mangindo-feeder/contract"
 	mErr "github.com/bigscreen/mangindo-feeder/error"
 	"github.com/bigscreen/mangindo-feeder/service"
 	"github.com/bigscreen/mangindo-feeder/validator"
 	"github.com/gorilla/mux"
-	"net/http"
 )
 
 func GetContents(s service.ContentService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
-		titleId := vars[constants.TitleIdKeyParam]
+		titleID := vars[constants.TitleIDKeyParam]
 		chapter := vars[constants.ChapterKeyParam]
 
 		validators := []validator.Validator{
-			validator.PresenceValidator{Field: constants.TitleIdKeyParam, Value: &titleId},
+			validator.PresenceValidator{Field: constants.TitleIDKeyParam, Value: &titleID},
 			validator.PresenceValidator{Field: constants.ChapterKeyParam, Value: &chapter},
 			validator.NumberValidator{Field: constants.ChapterKeyParam, Value: &chapter},
 		}
@@ -28,7 +29,7 @@ func GetContents(s service.ContentService) http.HandlerFunc {
 			return
 		}
 
-		contents, err := s.GetContents(contract.NewContentRequest(titleId, chapter))
+		contents, err := s.GetContents(contract.NewContentRequest(titleID, chapter))
 		if err != nil {
 			respondWith(mErr.GetStatusCodeOf(err), r, w, getErrorResponse(err))
 			return
