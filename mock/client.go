@@ -9,7 +9,7 @@ type MangaClientMock struct {
 	mock.Mock
 }
 
-func (m MangaClientMock) GetMangaList() (*domain.MangaListResponse, error) {
+func (m *MangaClientMock) GetMangaList() (*domain.MangaListResponse, error) {
 	args := m.Called()
 	if args.Get(1) != nil {
 		return nil, args.Get(1).(error)
@@ -21,8 +21,8 @@ type ChapterClientMock struct {
 	mock.Mock
 }
 
-func (m ChapterClientMock) GetChapterList(titleId string) (*domain.ChapterListResponse, error) {
-	args := m.Called(titleId)
+func (m *ChapterClientMock) GetChapterList(titleID string) (*domain.ChapterListResponse, error) {
+	args := m.Called(titleID)
 	if args.Get(1) != nil {
 		return nil, args.Get(1).(error)
 	}
@@ -33,8 +33,8 @@ type ContentClientMock struct {
 	mock.Mock
 }
 
-func (m ContentClientMock) GetContentList(titleId string, chapter float32) (*domain.ContentListResponse, error) {
-	args := m.Called(titleId, chapter)
+func (m *ContentClientMock) GetContentList(titleID string, chapter float32) (*domain.ContentListResponse, error) {
+	args := m.Called(titleID, chapter)
 	if args.Get(1) != nil {
 		return nil, args.Get(1).(error)
 	}

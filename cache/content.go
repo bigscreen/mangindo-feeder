@@ -2,11 +2,12 @@ package cache
 
 import (
 	"fmt"
+	"time"
+
 	"github.com/bigscreen/mangindo-feeder/appcontext"
 	"github.com/bigscreen/mangindo-feeder/constants"
 	"github.com/bigscreen/mangindo-feeder/logger"
 	"github.com/go-redis/redis"
-	"time"
 )
 
 type contentCache struct {
@@ -14,17 +15,17 @@ type contentCache struct {
 }
 
 type ContentCache interface {
-	Set(titleId, chapter, value string) error
-	Get(titleId, chapter string) (string, error)
-	Delete(titleId, chapter string) error
+	Set(titleID, chapter, value string) error
+	Get(titleID, chapter string) (string, error)
+	Delete(titleID, chapter string) error
 }
 
-func generateContentCacheKey(titleId, chapter string) string {
-	return fmt.Sprintf("ContentsCache|%s|%s", titleId, chapter)
+func generateContentCacheKey(titleID, chapter string) string {
+	return fmt.Sprintf("ContentsCache|%s|%s", titleID, chapter)
 }
 
-func (c *contentCache) Set(titleId, chapter, value string) error {
-	key := generateContentCacheKey(titleId, chapter)
+func (c *contentCache) Set(titleID, chapter, value string) error {
+	key := generateContentCacheKey(titleID, chapter)
 	err := c.redisClient.Set(key, value, time.Duration(constants.ContentCacheExpirationInMn)*time.Minute).Err()
 	if err != nil {
 		logger.Errorf("Failed to set %s - %s", key, err)
@@ -32,8 +33,8 @@ func (c *contentCache) Set(titleId, chapter, value string) error {
 	return err
 }
 
-func (c *contentCache) Get(titleId, chapter string) (string, error) {
-	key := generateContentCacheKey(titleId, chapter)
+func (c *contentCache) Get(titleID, chapter string) (string, error) {
+	key := generateContentCacheKey(titleID, chapter)
 	value, err := c.redisClient.Get(key).Result()
 	if err != nil {
 		logger.Errorf("Failed to get %s - %s", key, err)
@@ -41,8 +42,8 @@ func (c *contentCache) Get(titleId, chapter string) (string, error) {
 	return value, err
 }
 
-func (c *contentCache) Delete(titleId, chapter string) error {
-	key := generateContentCacheKey(titleId, chapter)
+func (c *contentCache) Delete(titleID, chapter string) error {
+	key := generateContentCacheKey(titleID, chapter)
 	err := c.redisClient.Del(key).Err()
 	if err != nil {
 		logger.Errorf("Failed to delete %s - %s", key, err)

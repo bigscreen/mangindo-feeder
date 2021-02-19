@@ -4,31 +4,32 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"io/ioutil"
+	"time"
+
 	"github.com/bigscreen/mangindo-feeder/config"
 	"github.com/bigscreen/mangindo-feeder/constants"
 	"github.com/bigscreen/mangindo-feeder/domain"
 	"github.com/bigscreen/mangindo-feeder/logger"
 	"github.com/gojektech/heimdall"
-	"io/ioutil"
-	"time"
 )
 
 type ChapterClient interface {
-	GetChapterList(titleId string) (*domain.ChapterListResponse, error)
+	GetChapterList(titleID string) (*domain.ChapterListResponse, error)
 }
 
 type chapterClient struct {
 	httpClient heimdall.Client
 }
 
-func buildChapterListEndpoint(titleId string) string {
+func buildChapterListEndpoint(titleID string) string {
 	qParam := "?manga=%s"
-	qParam = fmt.Sprintf(qParam, titleId)
+	qParam = fmt.Sprintf(qParam, titleID)
 	return config.BaseURL() + "/official/2016/chapter_list.php" + qParam
 }
 
-func (c *chapterClient) GetChapterList(titleId string) (*domain.ChapterListResponse, error) {
-	res, err := c.httpClient.Get(buildChapterListEndpoint(titleId), nil)
+func (c *chapterClient) GetChapterList(titleID string) (*domain.ChapterListResponse, error) {
+	res, err := c.httpClient.Get(buildChapterListEndpoint(titleID), nil)
 	if err != nil {
 		errMsg := constants.ServerError + " " + err.Error()
 		return nil, errors.New(errMsg)
@@ -39,7 +40,7 @@ func (c *chapterClient) GetChapterList(titleId string) (*domain.ChapterListRespo
 		return nil, err
 	}
 
-	if string(body) == "null" {
+	if string(body) == constants.NullText {
 		logger.Error("Origin response body is null")
 		return nil, errors.New(constants.InvalidJSONResponseError)
 	}

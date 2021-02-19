@@ -1,19 +1,21 @@
 package client
 
 import (
-	"github.com/ad2games/vcr-go"
+	"encoding/json"
+	"io/ioutil"
+	"net/http"
+	"os"
+	"strings"
+	"testing"
+
+	"gopkg.in/h2non/gock.v1"
+
 	"github.com/bigscreen/mangindo-feeder/appcontext"
 	"github.com/bigscreen/mangindo-feeder/config"
 	"github.com/bigscreen/mangindo-feeder/constants"
 	"github.com/bigscreen/mangindo-feeder/logger"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
-	"gopkg.in/h2non/gock.v1"
-	"io/ioutil"
-	"net/http"
-	"os"
-	"strings"
-	"testing"
 )
 
 type MangaClientTestSuite struct {
@@ -78,7 +80,7 @@ func (s *MangaClientTestSuite) TestGetMangaList_ReturnsError_WhenOriginServerRet
 	defer gock.Off()
 	gock.New(buildMangaListEndpoint()).
 		Reply(http.StatusOK).
-		Body(ioutil.NopCloser(strings.NewReader("null")))
+		Body(ioutil.NopCloser(strings.NewReader(constants.NullText)))
 
 	mc := NewMangaClient()
 	res, err := mc.GetMangaList()
@@ -89,11 +91,16 @@ func (s *MangaClientTestSuite) TestGetMangaList_ReturnsError_WhenOriginServerRet
 }
 
 func (s *MangaClientTestSuite) TestGetMangaList_ReturnsSuccessfulResponse() {
-	vcr.Start("get_manga_list_valid_response", nil)
-	defer vcr.Stop()
+	defer gock.Off()
+	gock.New(buildMangaListEndpoint()).
+		Reply(http.StatusOK).
+		Body(ioutil.NopCloser(strings.NewReader(`{"komik":[{"id":"1","judul":"Boku No Hero Academia","hidden_komik":"boku_no_hero_academia","icon_komik":"http://www.mangacanblog.com/official/img/boku_no_hero_academia.jpg","hiddenNewChapter":"224","lastModified":"2019-04-12 15:28:03","genre":"Action, Adventure, Comedy, Shounen, School Life, Sci-Fi, Supernatural","nama_lain":"Boku No Hero Academia","pengarang":"Horikoshi Kouhei","status":"OnGoing","published":"2014","summary":"Cerita ditetapkan di hari modern, kecuali orang-orang dengan kekuatan spesial di seluruh dunia. Anak laki-laki bernama Izuku Modoriya tidak memiliki kekuatan, tapi dia masih bermimpi, Penasaran? simak kisahnya hanya di mangacanblog.com."}]}`)))
 
 	mc := NewMangaClient()
 	res, err := mc.GetMangaList()
+
+	a, _ := json.Marshal(res)
+	println(string(a))
 
 	assert.Nil(s.T(), err)
 	assert.True(s.T(), len(res.Mangas) > 0)

@@ -31,6 +31,9 @@ vet:
 lint: install-linter
 	GO111MODULE=on ./bin/golangci-lint --config=".golangci.toml" -v run
 
+imports:
+	GO111MODULE=on goimports -w -local github.com ./
+
 # TESTS #
 
 test:

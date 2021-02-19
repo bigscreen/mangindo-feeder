@@ -2,16 +2,17 @@ package server
 
 import (
 	"context"
-	"github.com/bigscreen/mangindo-feeder/config"
-	"github.com/bigscreen/mangindo-feeder/logger"
-	"github.com/bigscreen/mangindo-feeder/service"
-	"github.com/codegangsta/negroni"
-	"github.com/getsentry/raven-go"
 	"net/http"
 	"os"
 	"os/signal"
 	"strconv"
 	"syscall"
+
+	"github.com/bigscreen/mangindo-feeder/config"
+	"github.com/bigscreen/mangindo-feeder/logger"
+	"github.com/bigscreen/mangindo-feeder/service"
+	"github.com/codegangsta/negroni"
+	"github.com/getsentry/raven-go"
 )
 
 func StartAPIServer() {
@@ -49,8 +50,8 @@ func waitForShutdown(apiServer *http.Server) {
 	signal.Notify(sig,
 		syscall.SIGINT,
 		syscall.SIGTERM)
-	_ = <-sig
+	<-sig
 	logger.Info("Mangindo-feeder is shutting down")
-	apiServer.Shutdown(context.Background())
+	_ = apiServer.Shutdown(context.Background())
 	logger.Info("Mangindo-feeder shutdown complete")
 }

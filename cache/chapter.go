@@ -2,11 +2,12 @@ package cache
 
 import (
 	"fmt"
+	"time"
+
 	"github.com/bigscreen/mangindo-feeder/appcontext"
 	"github.com/bigscreen/mangindo-feeder/constants"
 	"github.com/bigscreen/mangindo-feeder/logger"
 	"github.com/go-redis/redis"
-	"time"
 )
 
 type chapterCache struct {
@@ -14,17 +15,17 @@ type chapterCache struct {
 }
 
 type ChapterCache interface {
-	Set(titleId, value string) error
-	Get(titleId string) (string, error)
-	Delete(titleId string) error
+	Set(titleID, value string) error
+	Get(titleID string) (string, error)
+	Delete(titleID string) error
 }
 
-func generateChapterCacheKey(titleId string) string {
-	return fmt.Sprintf("ChaptersCache|%s", titleId)
+func generateChapterCacheKey(titleID string) string {
+	return fmt.Sprintf("ChaptersCache|%s", titleID)
 }
 
-func (c *chapterCache) Set(titleId, value string) error {
-	key := generateChapterCacheKey(titleId)
+func (c *chapterCache) Set(titleID, value string) error {
+	key := generateChapterCacheKey(titleID)
 	err := c.redisClient.Set(key, value, time.Duration(constants.ChapterCacheExpirationInMn)*time.Minute).Err()
 	if err != nil {
 		logger.Errorf("Failed to set %s - %s", key, err)
@@ -32,8 +33,8 @@ func (c *chapterCache) Set(titleId, value string) error {
 	return err
 }
 
-func (c *chapterCache) Get(titleId string) (string, error) {
-	key := generateChapterCacheKey(titleId)
+func (c *chapterCache) Get(titleID string) (string, error) {
+	key := generateChapterCacheKey(titleID)
 	value, err := c.redisClient.Get(key).Result()
 	if err != nil {
 		logger.Errorf("Failed to get %s - %s", key, err)
@@ -41,8 +42,8 @@ func (c *chapterCache) Get(titleId string) (string, error) {
 	return value, err
 }
 
-func (c *chapterCache) Delete(titleId string) error {
-	key := generateChapterCacheKey(titleId)
+func (c *chapterCache) Delete(titleID string) error {
+	key := generateChapterCacheKey(titleID)
 	err := c.redisClient.Del(key).Err()
 	if err != nil {
 		logger.Errorf("Failed to delete %s - %s", key, err)

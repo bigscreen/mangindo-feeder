@@ -3,13 +3,14 @@ package client
 import (
 	"encoding/json"
 	"errors"
+	"io/ioutil"
+	"time"
+
 	"github.com/bigscreen/mangindo-feeder/config"
 	"github.com/bigscreen/mangindo-feeder/constants"
 	"github.com/bigscreen/mangindo-feeder/domain"
 	"github.com/bigscreen/mangindo-feeder/logger"
 	"github.com/gojektech/heimdall"
-	"io/ioutil"
-	"time"
 )
 
 type MangaClient interface {
@@ -36,7 +37,7 @@ func (c *mangaClient) GetMangaList() (*domain.MangaListResponse, error) {
 		return nil, err
 	}
 
-	if string(body) == "null" {
+	if string(body) == constants.NullText {
 		logger.Error("Origin response body is null")
 		return nil, errors.New(constants.InvalidJSONResponseError)
 	}

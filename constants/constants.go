@@ -11,11 +11,11 @@ const (
 	GetChapterListCommand = "GetChapterListCommand"
 	GetContentListCommand = "GetContentListCommand"
 
-	GetMangasApiPath   = "/mangindo/v1/mangas"
-	GetChaptersApiPath = "/mangindo/v1/mangas/{title_id}/chapters"
-	GetContentsApiPath = "/mangindo/v1/mangas/{title_id}/chapters/{chapter}/contents"
+	GetMangasAPIPath   = "/mangindo/v1/mangas"
+	GetChaptersAPIPath = "/mangindo/v1/mangas/{title_id}/chapters"
+	GetContentsAPIPath = "/mangindo/v1/mangas/{title_id}/chapters/{chapter}/contents"
 
-	TitleIdKeyParam = "title_id"
+	TitleIDKeyParam = "title_id"
 	ChapterKeyParam = "chapter"
 
 	MangaCacheExpirationInMn   = 60
@@ -26,6 +26,8 @@ const (
 	SetChapterCacheJob = "SetChapterCacheJob"
 	SetContentCacheJob = "SetContentCacheJob"
 
-	JobArgTitleId = "JobArg_TitleId"
+	JobArgTitleID = "JobArg_TitleId"
 	JobArgChapter = "JobArg_Chapter"
+
+	NullText = "null"
 )

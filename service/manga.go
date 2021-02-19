@@ -24,7 +24,7 @@ type mangaService struct {
 func getMappedManga(dm domain.Manga) contract.Manga {
 	return contract.Manga{
 		Title:       dm.Title,
-		TitleId:     dm.TitleId,
+		TitleID:     dm.TitleID,
 		IconURL:     dm.IconURL,
 		LastChapter: dm.LastChapter,
 		Genre:       dm.Genre,
@@ -36,9 +36,9 @@ func getMappedManga(dm domain.Manga) contract.Manga {
 	}
 }
 
-func isPopularManga(titleId string) bool {
+func isPopularManga(titleID string) bool {
 	for _, tag := range config.PopularMangaTags() {
-		if titleId == tag {
+		if titleID == tag {
 			return true
 		}
 	}
@@ -67,7 +67,7 @@ func (s *mangaService) GetMangas() (popular *[]contract.Manga, latest *[]contrac
 	var lMangas []contract.Manga
 	for _, dm := range ml.Mangas {
 		manga := getMappedManga(dm)
-		if isPopularManga(manga.TitleId) {
+		if isPopularManga(manga.TitleID) {
 			pMangas = append(pMangas, manga)
 		} else {
 			lMangas = append(lMangas, manga)

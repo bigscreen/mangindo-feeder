@@ -2,15 +2,16 @@ package worker
 
 import (
 	"context"
+	"os"
+	"os/signal"
+	"syscall"
+
 	"github.com/bigscreen/mangindo-feeder/appcontext"
 	"github.com/bigscreen/mangindo-feeder/constants"
 	"github.com/bigscreen/mangindo-feeder/logger"
 	"github.com/bigscreen/mangindo-feeder/service"
 	"github.com/bigscreen/mangindo-feeder/worker/adapter"
 	"github.com/gocraft/work/webui"
-	"os"
-	"os/signal"
-	"syscall"
 )
 
 func Start() {

@@ -51,10 +51,6 @@
     # Detects duplication in code blocks.
     "dupl",
 
-    # https://github.com/jgautheron/goconst
-    # Finds repeated strings that could be replaced by a constant.
-    "goconst",
-
     # https://golang.org/cmd/gofmt/
     # Checks whether code was gofmt-ed.
     "gofmt",
@@ -66,10 +62,6 @@
     # https://github.com/client9/misspell
     # Finds commonly misspelled English words in comments.
     "misspell",
-
-    # https://github.com/mvdan/unparam
-    # Reports unused function parameters.
-    "unparam",
 
     # https://github.com/alexkohler/nakedret
     # Finds naked returns in functions greater than a specified function length.
@@ -88,6 +80,7 @@
   skip-dirs = [
     "bin",
     "out",
+    "worker/adapter",
   ]
 
   # golangci-lint passes it to "go list -mod={option}". From "go help modules":
@@ -125,7 +118,7 @@
   [linters-settings.goimports]
     # Put imports beginning with prefix after 3rd-party packages;
     # it's a comma-separated list of prefixes
-    local-prefixes = "source.golabs.io"
+    local-prefixes = "github.com"
 
   [linters-settings.misspell]
     # Correct spellings using locale preferences for US or UK.

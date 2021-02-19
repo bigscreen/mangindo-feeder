@@ -1,9 +1,10 @@
 package contract
 
 import (
+	"testing"
+
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
-	"testing"
 )
 
 type ContentRequestTestSuite struct {
@@ -17,7 +18,7 @@ func TestContentRequestSuiteSuite(t *testing.T) {
 func (s *ContentRequestTestSuite) TestNewContentRequest_ReturnsContentRequestWithZeroChapter_WhenInvalidChapterIsBeingSet() {
 	req := NewContentRequest("bleach", "1bc")
 
-	assert.Equal(s.T(), "bleach", req.TitleId)
+	assert.Equal(s.T(), "bleach", req.TitleID)
 	assert.Equal(s.T(), float32(0.0), req.Chapter)
 }
 
@@ -27,13 +28,13 @@ func (s *ContentRequestTestSuite) TestNewContentRequest_ReturnsContentRequestWit
 		"5732657356253625362563256325362536214252435363425253452626262536262536252672725732657356253625362563256325.0"
 	req := NewContentRequest("bleach", badF)
 
-	assert.Equal(s.T(), "bleach", req.TitleId)
+	assert.Equal(s.T(), "bleach", req.TitleID)
 	assert.Equal(s.T(), float32(0.0), req.Chapter)
 }
 
 func (s *ContentRequestTestSuite) TestNewContentRequest_ReturnsValidContentRequest() {
 	req := NewContentRequest("bleach", "650")
 
-	assert.Equal(s.T(), "bleach", req.TitleId)
+	assert.Equal(s.T(), "bleach", req.TitleID)
 	assert.Equal(s.T(), float32(650.0), req.Chapter)
 }

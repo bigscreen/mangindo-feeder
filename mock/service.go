@@ -9,7 +9,7 @@ type MangaServiceMock struct {
 	mock.Mock
 }
 
-func (m MangaServiceMock) GetMangas() (popular *[]contract.Manga, latest *[]contract.Manga, err error) {
+func (m *MangaServiceMock) GetMangas() (popular *[]contract.Manga, latest *[]contract.Manga, err error) {
 	args := m.Called()
 	if args.Get(2) != nil {
 		return nil, nil, args.Get(2).(error)
@@ -27,7 +27,7 @@ type ChapterServiceMock struct {
 	mock.Mock
 }
 
-func (m ChapterServiceMock) GetChapters(req contract.ChapterRequest) (*[]contract.Chapter, error) {
+func (m *ChapterServiceMock) GetChapters(req contract.ChapterRequest) (*[]contract.Chapter, error) {
 	args := m.Called(req)
 	if args.Get(1) != nil {
 		return nil, args.Get(1).(error)
@@ -39,7 +39,7 @@ type ContentServiceMock struct {
 	mock.Mock
 }
 
-func (m ContentServiceMock) GetContents(req contract.ContentRequest) (*[]contract.Content, error) {
+func (m *ContentServiceMock) GetContents(req contract.ContentRequest) (*[]contract.Content, error) {
 	args := m.Called(req)
 	if args.Get(1) != nil {
 		return nil, args.Get(1).(error)
@@ -51,7 +51,7 @@ type WorkerServiceMock struct {
 	mock.Mock
 }
 
-func (m WorkerServiceMock) SetMangaCache() error {
+func (m *WorkerServiceMock) SetMangaCache() error {
 	args := m.Called()
 	if args.Get(0) != nil {
 		return args.Get(0).(error)
@@ -59,16 +59,16 @@ func (m WorkerServiceMock) SetMangaCache() error {
 	return nil
 }
 
-func (m WorkerServiceMock) SetChapterCache(titleId string) error {
-	args := m.Called(titleId)
+func (m *WorkerServiceMock) SetChapterCache(titleID string) error {
+	args := m.Called(titleID)
 	if args.Get(0) != nil {
 		return args.Get(0).(error)
 	}
 	return nil
 }
 
-func (m WorkerServiceMock) SetContentCache(titleId string, chapter float32) error {
-	args := m.Called(titleId, chapter)
+func (m *WorkerServiceMock) SetContentCache(titleID string, chapter float32) error {
+	args := m.Called(titleID, chapter)
 	if args.Get(0) != nil {
 		return args.Get(0).(error)
 	}

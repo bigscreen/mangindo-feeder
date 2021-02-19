@@ -12,7 +12,7 @@ type Config struct {
 	redisPort          int
 	redisPool          int
 	workerRedisAddress string
-	baseUrl            string
+	baseURL            string
 	popularMangaTags   []string
 	adsContentTags     []string
 	hystrixConfig      heimdall.HystrixCommandConfig
@@ -31,7 +31,7 @@ func Load() {
 	viper.AddConfigPath("../../")
 	viper.SetConfigType("yaml")
 
-	viper.ReadInConfig()
+	_ = viper.ReadInConfig()
 
 	appConfig = &Config{
 		port:               getIntOrPanic("APP_PORT"),
@@ -40,7 +40,7 @@ func Load() {
 		redisPort:          getIntOrPanic("REDIS_PORT"),
 		redisPool:          getIntOrPanic("REDIS_POOL"),
 		workerRedisAddress: fatalGetString("WORKER_REDIS_ADDRESS"),
-		baseUrl:            fatalGetString("ORIGIN_SERVER_BASE_URL"),
+		baseURL:            fatalGetString("ORIGIN_SERVER_BASE_URL"),
 		popularMangaTags:   fatalGetStringArray("POPULAR_MANGA_TAGS", ", "),
 		adsContentTags:     fatalGetStringArray("ADS_CONTENT_TAGS", ", "),
 		hystrixConfig: heimdall.HystrixCommandConfig{
@@ -77,7 +77,7 @@ func WorkerRedisAddress() string {
 }
 
 func BaseURL() string {
-	return appConfig.baseUrl
+	return appConfig.baseURL
 }
 
 func PopularMangaTags() []string {

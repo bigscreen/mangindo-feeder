@@ -3,6 +3,8 @@ package manager
 import (
 	"encoding/json"
 	"errors"
+	"testing"
+
 	"github.com/bigscreen/mangindo-feeder/appcontext"
 	"github.com/bigscreen/mangindo-feeder/cache"
 	"github.com/bigscreen/mangindo-feeder/config"
@@ -11,11 +13,16 @@ import (
 	"github.com/bigscreen/mangindo-feeder/mock"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
-	"testing"
 )
 
 type ContentCacheManagerTestSuite struct {
 	suite.Suite
+	cca cache.ContentCache
+	ccl *mock.ContentClientMock
+}
+
+func TestContentCacheManagerTestSuite(t *testing.T) {
+	suite.Run(t, new(ContentCacheManagerTestSuite))
 }
 
 func (s *ContentCacheManagerTestSuite) SetupSuite() {
@@ -24,48 +31,41 @@ func (s *ContentCacheManagerTestSuite) SetupSuite() {
 	logger.SetupLogger()
 }
 
-func TestContentCacheManagerTestSuite(t *testing.T) {
-	suite.Run(t, new(ContentCacheManagerTestSuite))
+func (s *ContentCacheManagerTestSuite) SetupTest() {
+	s.cca = cache.NewContentCache()
+	s.ccl = &mock.ContentClientMock{}
 }
 
 func (s *ContentCacheManagerTestSuite) TestSetCache_ReturnsError_WhenClientReturnsError() {
-	ccl := mock.ContentClientMock{}
-	cca := cache.NewContentCache()
-
-	ccl.
-		On("GetContentList", "bleach", float32(650.0)).
+	s.ccl.On("GetContentList", "bleach", float32(650.0)).
 		Return(nil, errors.New("some error"))
 
-	ccm := NewContentCacheManager(ccl, cca)
+	ccm := NewContentCacheManager(s.ccl, s.cca)
 	err := ccm.SetCache("bleach", float32(650.0))
 
 	assert.Equal(s.T(), "some error", err.Error())
-	ccl.AssertExpectations(s.T())
+	s.ccl.AssertExpectations(s.T())
 }
 
 func (s *ContentCacheManagerTestSuite) TestSetCache_WhenSucceed() {
-	ccl := mock.ContentClientMock{}
-	cca := cache.NewContentCache()
-
 	res := getFakeContentList()
-	ccl.On("GetContentList", "bleach", float32(650.0)).Return(&res, nil)
+	s.ccl.On("GetContentList", "bleach", float32(650.0)).Return(&res, nil)
 
-	ccm := NewContentCacheManager(ccl, cca)
+	ccm := NewContentCacheManager(s.ccl, s.cca)
 	err := ccm.SetCache("bleach", float32(650.0))
 
 	ec, _ := json.Marshal(res)
-	sc, _ := cca.Get("bleach", "650")
+	sc, _ := s.cca.Get("bleach", "650")
 
 	assert.Nil(s.T(), err)
 	assert.Equal(s.T(), string(ec), sc)
-	ccl.AssertExpectations(s.T())
+	s.ccl.AssertExpectations(s.T())
 
-	_ = cca.Delete("bleach", "650")
+	_ = s.cca.Delete("bleach", "650")
 }
 
 func (s *ContentCacheManagerTestSuite) TestGetCache_ReturnsError_WhenCacheIsMissing() {
-	cca := cache.NewContentCache()
-	ccm := NewContentCacheManager(mock.ContentClientMock{}, cca)
+	ccm := NewContentCacheManager(s.ccl, s.cca)
 
 	cl, err := ccm.GetCache("bleach", float32(650.0))
 
@@ -74,11 +74,12 @@ func (s *ContentCacheManagerTestSuite) TestGetCache_ReturnsError_WhenCacheIsMiss
 }
 
 func (s *ContentCacheManagerTestSuite) TestGetCache_ReturnsError_WhenCacheIsInvalid() {
-	cca := cache.NewContentCache()
-	ccm := NewContentCacheManager(mock.ContentClientMock{}, cca)
+	ccm := NewContentCacheManager(s.ccl, s.cca)
 
-	_ = cca.Set("bleach", "650", "foo")
-	defer cca.Delete("bleach", "650")
+	_ = s.cca.Set("bleach", "650", "foo")
+	defer func() {
+		_ = s.cca.Delete("bleach", "650")
+	}()
 
 	cl, err := ccm.GetCache("bleach", float32(650.0))
 
@@ -87,12 +88,13 @@ func (s *ContentCacheManagerTestSuite) TestGetCache_ReturnsError_WhenCacheIsInva
 }
 
 func (s *ContentCacheManagerTestSuite) TestGetCache_ReturnsContentList_WhenCacheIsStored() {
-	cca := cache.NewContentCache()
-	ccm := NewContentCacheManager(mock.ContentClientMock{}, cca)
+	ccm := NewContentCacheManager(s.ccl, s.cca)
 
 	cb, _ := json.Marshal(getFakeContentList())
-	_ = cca.Set("bleach", "650", string(cb))
-	defer cca.Delete("bleach", "650")
+	_ = s.cca.Set("bleach", "650", string(cb))
+	defer func() {
+		_ = s.cca.Delete("bleach", "650")
+	}()
 
 	cl, err := ccm.GetCache("bleach", float32(650.0))
 

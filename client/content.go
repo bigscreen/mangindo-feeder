@@ -4,31 +4,32 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"io/ioutil"
+	"time"
+
 	"github.com/bigscreen/mangindo-feeder/config"
 	"github.com/bigscreen/mangindo-feeder/constants"
 	"github.com/bigscreen/mangindo-feeder/domain"
 	"github.com/bigscreen/mangindo-feeder/logger"
 	"github.com/gojektech/heimdall"
-	"io/ioutil"
-	"time"
 )
 
 type ContentClient interface {
-	GetContentList(titleId string, chapter float32) (*domain.ContentListResponse, error)
+	GetContentList(titleID string, chapter float32) (*domain.ContentListResponse, error)
 }
 
 type contentClient struct {
 	httpClient heimdall.Client
 }
 
-func buildContentListEndpoint(titleId string, chapter float32) string {
+func buildContentListEndpoint(titleID string, chapter float32) string {
 	qParams := "?manga=%s&chapter=%f"
-	qParams = fmt.Sprintf(qParams, titleId, chapter)
+	qParams = fmt.Sprintf(qParams, titleID, chapter)
 	return config.BaseURL() + "/official/2016/image_list.php" + qParams
 }
 
-func (c *contentClient) GetContentList(titleId string, chapter float32) (*domain.ContentListResponse, error) {
-	res, err := c.httpClient.Get(buildContentListEndpoint(titleId, chapter), nil)
+func (c *contentClient) GetContentList(titleID string, chapter float32) (*domain.ContentListResponse, error) {
+	res, err := c.httpClient.Get(buildContentListEndpoint(titleID, chapter), nil)
 	if err != nil {
 		errMsg := constants.ServerError + " " + err.Error()
 		return nil, errors.New(errMsg)
@@ -39,7 +40,7 @@ func (c *contentClient) GetContentList(titleId string, chapter float32) (*domain
 		return nil, err
 	}
 
-	if string(body) == "null" {
+	if string(body) == constants.NullText {
 		logger.Error("Origin response body is null")
 		return nil, errors.New(constants.InvalidJSONResponseError)
 	}

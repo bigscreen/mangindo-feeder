@@ -2,7 +2,7 @@ package contract
 
 type Manga struct {
 	Title       string `json:"title"`
-	TitleId     string `json:"title_id"`
+	TitleID     string `json:"title_id"`
 	IconURL     string `json:"icon_url"`
 	LastChapter string `json:"last_chapter"`
 	Genre       string `json:"genre"`

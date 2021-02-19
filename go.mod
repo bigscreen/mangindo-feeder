@@ -3,7 +3,6 @@ module github.com/bigscreen/mangindo-feeder
 go 1.14
 
 require (
-	github.com/ad2games/vcr-go v0.0.0-20180813145912-faa03fdbd7ac
 	github.com/afex/hystrix-go v0.0.0-20180502004556-fa1af6a1f4f5 // indirect
 	github.com/braintree/manners v0.0.0-20160418043613-82a8879fc5fd // indirect
 	github.com/certifi/gocertifi v0.0.0-20200922220541-2c3bb06c6054 // indirect

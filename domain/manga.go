@@ -1,9 +1,9 @@
 package domain
 
 type Manga struct {
-	Id           string `json:"id"`
+	ID           string `json:"id"`
 	Title        string `json:"judul"`
-	TitleId      string `json:"hidden_komik"`
+	TitleID      string `json:"hidden_komik"`
 	IconURL      string `json:"icon_komik"`
 	LastChapter  string `json:"hiddenNewChapter"`
 	ModifiedDate string `json:"lastModified"`

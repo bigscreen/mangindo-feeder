@@ -2,6 +2,8 @@ package service
 
 import (
 	"errors"
+	"testing"
+
 	"github.com/bigscreen/mangindo-feeder/appcontext"
 	"github.com/bigscreen/mangindo-feeder/config"
 	"github.com/bigscreen/mangindo-feeder/constants"
@@ -11,7 +13,6 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/suite"
-	"testing"
 )
 
 type WorkerServiceTestSuite struct {
@@ -92,15 +93,15 @@ func stubSetMangaJob(w *mMock.WorkerAdapterMock, returnedErr error) {
 	stubWorkerPerform(w, constants.SetMangaCacheJob, nil).Return(returnedErr)
 }
 
-func stubSetChapterJob(w *mMock.WorkerAdapterMock, titleId string, returnedErr error) {
+func stubSetChapterJob(w *mMock.WorkerAdapterMock, titleID string, returnedErr error) {
 	stubWorkerPerform(w, constants.SetChapterCacheJob, adapter.Args{
-		constants.JobArgTitleId: titleId,
+		constants.JobArgTitleID: titleID,
 	}).Return(returnedErr)
 }
 
-func stubSetContentJob(w *mMock.WorkerAdapterMock, titleId string, chapter float32, returnedErr error) {
+func stubSetContentJob(w *mMock.WorkerAdapterMock, titleID string, chapter float32, returnedErr error) {
 	stubWorkerPerform(w, constants.SetContentCacheJob, adapter.Args{
-		constants.JobArgTitleId: titleId,
+		constants.JobArgTitleID: titleID,
 		constants.JobArgChapter: chapter,
 	}).Return(returnedErr)
 }

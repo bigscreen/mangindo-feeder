@@ -1,13 +1,14 @@
 package main
 
 import (
+	"os"
+
 	"github.com/bigscreen/mangindo-feeder/appcontext"
 	"github.com/bigscreen/mangindo-feeder/config"
 	"github.com/bigscreen/mangindo-feeder/logger"
 	"github.com/bigscreen/mangindo-feeder/server"
 	"github.com/bigscreen/mangindo-feeder/worker"
 	"github.com/urfave/cli"
-	"os"
 )
 
 func handleInitError() {
